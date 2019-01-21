@@ -5,4 +5,4 @@
 
 tabbed -c -r 2 st -w '' -t 'suckless terminal'
 
-exit 0
+exit $?
