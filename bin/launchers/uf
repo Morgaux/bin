@@ -1,0 +1,26 @@
+#!/bin/sh
+#
+# gitlab.com/morgaux/bin
+#
+# Execute apropriate ufetch, depends on ufetch-* in PATH
+#
+
+OSLST="linuxlite alpine antegros arch arco aux centos crux debian elemetary fedora gentoo mageia manjaro mint mxlinux nixos parabola popos raspbian suse ubuntu viod voyager"
+
+# Linux
+for i in $(echo "$OSLST" | tr " " "\n"); do
+	if grep -q -i $i /etc/*release*; then
+		ufetch-$i 2> /dev/null && exit 0
+	fi
+done
+
+for i in freebsd openbsd linux ; do
+	if uname -a | grep -q -i $i ; then
+		ufetch-$i 2> /dev/null && exit 0
+	fi
+done
+
+echo "error: ufetch not found" 1>&2
+
+exit 1
+
