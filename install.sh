@@ -9,6 +9,7 @@
 ##
 
 # Definitions
+SRCDIR="$(dirname $(readlink -f "$0"))"
 NAME="~/bin Installer"
 VERSION="1.0.0"
 MESG="Installer commit"
@@ -77,7 +78,7 @@ selfInstall()
 	if [ -d $1 ] ; then
 		for i in $1/* ; do
 			echo "Installing $i..."
-			cp -uf ~/src/bin/$i ~/bin/.
+			cp -uf $SRCDIR/$i ~/bin/.
 		done
 		return
 	fi
