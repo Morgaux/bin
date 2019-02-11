@@ -42,6 +42,7 @@ main()
 			-s|--save)
 				shift
 				SAVEDOC="TRUE"
+				;;
 			*)
 				getDocumentSCP "$1"
 				shift
