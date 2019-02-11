@@ -24,7 +24,13 @@ getDocumentSCP()
 
 showDocumentSCP()
 {
-	echo
+	[ -d "$DOCPATH" ] || mkdir -p "$DOCPATH"
+
+	case "$1" in
+		*)
+			getDocumentSCP $1
+			;;
+	esac
 }
 
 main()
