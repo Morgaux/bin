@@ -1,4 +1,37 @@
 #!/bin/sh
 
-lynx -dump "http://scp-wiki.wikidot.com/scp-$1" | sed -n '/IFRAME/,$p' | tail -n +4 | sed -n '/page revision/q;p'
+usage()
+{
+	echo "SCP - Fetch Secure Contain Protect Foundation Documents"
+	echo "Not to be confused with scp - Secure Copy Protocol"
+	echo "usage: SCP [ OPTIONS ... ] DOCUMENT"
+	exit 0
+}
+
+[ $# -gt 0 ] || usage
+
+getDocumentSCP()
+{
+	lynx -dump "http://scp-wiki.wikidot.com/scp-$1" | sed -n '/IFRAME/,$p' | tail -n +4 | sed -n '/page revision/q;p' && return 0
+	echo "Document for SCP-$1 not found." 1>&2
+	return 1
+}
+
+main()
+{
+	while [ $# -gt 0 ] ; do
+		case $1 in
+			-h|--help)
+				shift
+				usage
+				;;
+			*)
+				getDocumentSCP "$1"
+				shift
+				;;
+		esac
+	done
+}
+
+main "$@"
 
