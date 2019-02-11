@@ -1,0 +1,4 @@
+#!/bin/sh
+
+lynx -dump "http://scp-wiki.wikidot.com/scp-$1" | sed -n '/IFRAME/,$p' | tail -n +4 | sed -n '/page revision/q;p'
+
