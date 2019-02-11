@@ -1,5 +1,6 @@
 #!/bin/sh
 
+# Usage check
 usage()
 {
 	echo "SCP - Fetch Secure Contain Protect Foundation Documents"
@@ -10,11 +11,20 @@ usage()
 
 [ $# -gt 0 ] || usage
 
+# Declarations
+DOCPATH="$HOME/Documents/SCP"
+LESSDOC="FALSE"
+SAVEDOC="FALSE"
+
+# Functions
 getDocumentSCP()
 {
-	lynx -dump "http://scp-wiki.wikidot.com/scp-$1" | sed -n '/IFRAME/,$p' | tail -n +4 | sed -n '/page revision/q;p' && return 0
-	echo "Document for SCP-$1 not found." 1>&2
-	return 1
+	lynx -dump "http://scp-wiki.wikidot.com/scp-$1" | sed -n '/IFRAME/,$p' | tail -n +4 | sed -n '/page revision/q;p'
+}
+
+showDocumentSCP()
+{
+	echo
 }
 
 main()
@@ -25,6 +35,13 @@ main()
 				shift
 				usage
 				;;
+			-l|--less)
+				shift
+				LESSDOC="TRUE"
+				;;
+			-s|--save)
+				shift
+				SAVEDOC="TRUE"
 			*)
 				getDocumentSCP "$1"
 				shift
