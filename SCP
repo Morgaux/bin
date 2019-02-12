@@ -17,20 +17,43 @@ LESSDOC="FALSE"
 SAVEDOC="FALSE"
 
 # Functions
-getDocumentSCP()
+fetchDocument()
 {
 	lynx -dump "http://scp-wiki.wikidot.com/scp-$1" | sed -n '/IFRAME/,$p' | tail -n +4 | sed -n '/page revision/q;p'
 }
 
+getDocumentSCP()
+{
+	fetchDocument $1
+}
+
 showDocumentSCP()
 {
-	[ -d "$DOCPATH" ] || mkdir -p "$DOCPATH"
+	#[ -d "$DOCPATH" ] || mkdir -p "$DOCPATH"
 
 	case "$1" in
+		"all"|"ALL")
+			for ID in $(getAllDocumentIds); do
+				getDocumentSCP $ID
+			done
+			;;
 		*)
 			getDocumentSCP $1
 			;;
 	esac
+}
+
+getAllDocumentIds()
+{
+	for l in "" 1 2 3 4 5 6 7 8 9; do
+		for k in 0 1 2 3 4 5 6 7 8 9; do
+			for j in 0 1 2 3 4 5 6 7 8 9; do
+				for i in 0 1 2 3 4 5 6 7 8 9; do
+					echo "$l$k$j$i"
+				done
+			done
+		done | tail -n+2
+	done
 }
 
 main()
@@ -50,7 +73,7 @@ main()
 				SAVEDOC="TRUE"
 				;;
 			*)
-				getDocumentSCP "$1"
+				showDocumentSCP "$1"
 				shift
 				;;
 		esac
