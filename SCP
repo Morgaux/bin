@@ -40,6 +40,11 @@ getDocumentSCP()
 	fetchDocument $1
 }
 
+readDocumentSCP()
+{
+	espeak -f scp-$1 -w scp-$1.wav
+}
+
 showDocumentSCP()
 {
 	#[ -d "$DOCPATH" ] || mkdir -p "$DOCPATH"
