@@ -1,8 +1,11 @@
-#!/usr/bin/env sh
+#!/bin/sh
 #
 # https://gitlab.com/morgaux/bin
 # 
 
+
+
 tabbed -c -r 2 st -w '' -t 'suckless terminal'
 
 exit $?
+
