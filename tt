@@ -3,9 +3,16 @@
 # https://gitlab.com/morgaux/bin
 # 
 
-[ -x "$(command -v st)" ] || exit 1
+die()
+{
+	err "$@"
+	exit 1
+}
 
-[ -x "$(command -v tabbed)" ] || { st -t 'suckless terminal' ; exit 1 ; }
+[ -x "$(command -v st)" ] || die "tt: st not installed"
+
+[ -x "$(command -v tabbed)" ] || \
+	{ st -t 'suckless terminal' ; die "tt: tabbed not installed" ; }
 
 tabbed -c -r 2 st -w '' -t 'suckless terminal'
 

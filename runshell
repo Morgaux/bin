@@ -1,4 +1,7 @@
 #!/bin/sh
+#
+# http://gitlab.com/morgaux/bin
+#
 
 ps $$ | tail -n 1 | sed 's/.*://g' | cut -c 4-
 
