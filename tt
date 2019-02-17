@@ -3,7 +3,9 @@
 # https://gitlab.com/morgaux/bin
 # 
 
+[ -x "$(command -v st)" ] || exit 1
 
+[ -x "$(command -v tabbed)" ] || { st -t 'suckless terminal' ; exit 1 ; }
 
 tabbed -c -r 2 st -w '' -t 'suckless terminal'
 
