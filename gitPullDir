@@ -1,0 +1,12 @@
+#!/bin/ah
+
+[ -x "$(command -v git)" ] || exit 1
+
+for i in ./*/ ; do
+	if [ -d "$i/.git" ] ; then
+		cd "$i"
+		git pull
+		cd ..
+	fi
+done
+

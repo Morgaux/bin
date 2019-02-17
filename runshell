@@ -1,0 +1,4 @@
+#!/bin/sh
+
+ps $$ | tail -n 1 | sed 's/.*://g' | cut -c 4-
+
