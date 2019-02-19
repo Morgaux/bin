@@ -10,13 +10,13 @@ OSLST="linuxlite alpine antegros arch arco aux centos crux debian elemetary fedo
 # Linux
 for i in $(echo "$OSLST" | tr " " "\n"); do
 	if grep -q -i $i /etc/*release*; then
-		ufetch-$i 2> /dev/null && exit 0
+		ufetch-$i 2> /dev/null && exit $?
 	fi
 done
 
 for i in freebsd openbsd linux ; do
 	if uname -a | grep -q -i $i ; then
-		ufetch-$i 2> /dev/null && exit 0
+		ufetch-$i 2> /dev/null && exit $?
 	fi
 done
 
