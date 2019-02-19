@@ -5,8 +5,15 @@
 # Edit a file with the prefered editor
 #
 
+
 # cleanly open a file if no args given and EDITOR is set
 [ $# -gt 0 ] || [ -z "$EDITOR" ] || { env "$EDITOR" ; exit $? ; }
+
+
+#
+# unless option(s) given, below is unreachable
+#
+
 
 getEDITOR()
 {
@@ -58,7 +65,7 @@ readOption()
 while [ $# -gt 0 ] ; do
 	case "$1" in
 		-*)
-			readOption "$1"
+			readOption "$@"
 			shift
 			;;
 		*)

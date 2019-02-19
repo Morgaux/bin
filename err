@@ -2,8 +2,10 @@
 #
 # http://gitlab.com/morgaux/bin
 #
+# print message to stderr
+#
 
-echo "error: $@" 1>&2
+echo "$@" 1>&2
 
 exit 1
 
