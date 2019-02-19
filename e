@@ -52,10 +52,13 @@ editFile()
 readOption()
 {
 	case $1 in
-		-E*)
+		-E)
 			# use a substitue EDITOR
-			export EDITOR="$(echo $1 | sed 's/^\(-E\)\1*//')"
-			validateEDITOR || die "$1 is not a valid EDITOR"
+			[ $# -gt 1 ] || die "$1 option requires argument"
+			export EDITOR="$2"
+			validateEDITOR || die "$2 is not a valid EDITOR"
+			# tell arg reader to shift once extra
+			return 1
 			;;
 		*)
 			die "unknown option $1"
@@ -65,7 +68,8 @@ readOption()
 while [ $# -gt 0 ] ; do
 	case "$1" in
 		-*)
-			readOption "$@"
+			# readOption func "fails" if extra shift required
+			readOption "$@" || shift
 			shift
 			;;
 		*)
