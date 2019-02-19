@@ -46,7 +46,11 @@ editFile()
 	# if EDITOR is valid, edit a file
 	validateEDITOR || getEDITOR
 
-	env "$EDITOR" "$@"
+	EDITFILE="$1"
+	shift
+
+	# give editor flags and file
+	env "$EDITOR" "$@" "$EDITFILE"
 }
 
 readOption()
