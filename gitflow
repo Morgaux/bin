@@ -5,7 +5,11 @@
 # git workflow
 #
 
-[ -x "$(command -v git)" ] || err "$0: git not found, plase install" || exit 1
+git_check()
+{
+[ -x "$(command -v git)" ] || err "$0: git not found, plase install" || return 1
+[ -d "./.git" ] || err "$0: not in a git repo dir" || return 1
+}
 
 git_edit()
 {
