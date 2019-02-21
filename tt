@@ -5,8 +5,8 @@
 
 die()
 {
-	err "$@"
-	exit 1
+err "$@"
+exit 1
 }
 
 [ -x "$(command -v st)" ] || die "tt: st not installed"
@@ -15,6 +15,4 @@ die()
 	{ st -t 'suckless terminal' ; die "tt: tabbed not installed" ; }
 
 tabbed -c -r 2 st -w '' -t 'suckless terminal'
-
-exit $?
 

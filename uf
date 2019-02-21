@@ -5,7 +5,7 @@
 # Execute apropriate ufetch, depends on ufetch-* in PATH
 #
 
-OSLST="linuxlite alpine antegros arch arco aux centos crux debian elemetary fedora gentoo mageia manjaro mint mxlinux nixos parabola popos raspbian suse ubuntu viod voyager"
+OSLST="alpine arch debian fedora manjaro mint mxlinux raspbian ubuntu viod"
 
 # Linux
 for i in $(echo "$OSLST" | tr " " "\n"); do

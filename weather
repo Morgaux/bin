@@ -5,5 +5,3 @@
 
 curl -s wttr.in | head -n 7 || err "weather: an error occured"
 
-exit $?
-

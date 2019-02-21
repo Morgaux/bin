@@ -1,0 +1,9 @@
+#!/bin/sh
+#
+# https://gitlab.com/morgaux/bin
+#
+# print public ip and a \n
+#
+
+curl ifconfig.me/ip && echo
+
