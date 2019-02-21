@@ -1,0 +1,24 @@
+#!/bin/sh
+#
+# http://gitlab.com/morgaux/bin
+#
+# git workflow
+#
+
+[ -x "$(command -v git)" ] || err "$0: git not found, plase install" || exit 1
+
+git_edit()
+{
+e "$@"
+git add "$@"
+git commit -m "Updated $@ $(date +%F)"
+}
+
+git_push()
+{
+for i in 2 1 0; do
+	git push && break
+	echo "trying again $i more times"
+done
+}
+
