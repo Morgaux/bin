@@ -13,6 +13,8 @@ git_check()
 
 git_edit()
 {
+git_check || return 1
+
 e "$@"
 git add "$@"
 git commit -m "Updated $@ $(date +%F)"
@@ -20,6 +22,8 @@ git commit -m "Updated $@ $(date +%F)"
 
 git_push()
 {
+git_check || return 1
+
 for i in 2 1 0; do
 	git push && break
 	echo "trying again $i more times"
