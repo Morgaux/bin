@@ -8,8 +8,8 @@ OSLST="alpine arch debian fedora manjaro mint mxlinux raspbian ubuntu viod"
 
 # Linux
 for i in $(echo "$OSLST" | tr " " "\n"); do
-	if grep -q -i $i /etc/*release*; then
-		ufetch-$i 2> /dev/null && exit $?
+	if grep -q -i "$i" /etc/*release*; then
+		ufetch-"$i" 2> /dev/null && exit $?
 	fi
 done
 
