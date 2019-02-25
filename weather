@@ -1,6 +1,7 @@
 #!/bin/sh
+
 #
-# http://gitlab.com/morgaux/bin
+# fetch the weather
 #
 
 curl -s wttr.in | head -n 7 || err "weather: an error occured"

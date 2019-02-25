@@ -1,6 +1,7 @@
 #!/bin/sh
+
 #
-# https://gitlab.com/morgaux/bin
+# open a tabbed st instance
 # 
 
 die()

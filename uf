@@ -1,6 +1,5 @@
 #!/bin/sh
-#
-# gitlab.com/morgaux/bin
+
 #
 # Execute apropriate ufetch, depends on ufetch-* in PATH
 #
