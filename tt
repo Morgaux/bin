@@ -4,16 +4,7 @@
 # open a tabbed st instance
 # 
 
-die()
-{
-err "$@"
-exit 1
-}
+[ -x "$(command -v st)" ] && [ -x "$(command -v tabbed)" ] || exit 1
 
-[ -x "$(command -v st)" ] || die "tt: st not installed"
-
-[ -x "$(command -v tabbed)" ] || \
-	{ st -t 'suckless terminal' ; die "tt: tabbed not installed" ; }
-
-tabbed -c -r 2 st -w '' -t 'suckless terminal'
+tabbed -c -r 2 st -w '' -t 'tabbed terminal'
 
