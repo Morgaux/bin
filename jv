@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+# https://gitlab.com/morgaux/bin
+#
+
+#
+# Java compile and run in one step
+#
+
+javac $1 && java ${1%.*}
+
