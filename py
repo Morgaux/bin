@@ -7,7 +7,7 @@
 # Python3 file: edit  and run in one step
 #
 
-[ -x "$(command -v python3)" ]
+[ -x "$(command -v python3)" ] || exit
 
-python3 "$@"
+e "$1" || python3 "$1"
 
