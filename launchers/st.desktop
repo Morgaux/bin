@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=st
-Exec=/usr/local/bin/st
+Exec=st
 Terminal=false
 Icon=utilities-terminal
 Type=Application
