@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=tt
+Exec=tt
+Terminal=false
+Icon=utilities-terminal
+Type=Application

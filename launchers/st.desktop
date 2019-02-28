@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=st
+Exec=/usr/local/bin/st
+Terminal=false
+Icon=utilities-terminal
+Type=Application
