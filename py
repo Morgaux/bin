@@ -9,5 +9,5 @@
 
 [ -x "$(command -v python3)" ] || exit
 
-e "$1" || python3 "$1"
+e "$1" && python3 "$1"
 
