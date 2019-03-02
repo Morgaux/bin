@@ -5,8 +5,9 @@
 
 # save a Screen Shot
 
-[ -d "$(xdg-user-dir PICTURES)/Screenshots" ] && mkdir -p "$(xdg-user-dir PICTURES)/Screenshots"
 [ -x "$(command -v scrot)" ] || exit 1
+[ -x "$(command -v xdg-user-dir)" ] || exit 1
+[ -d "$(xdg-user-dir PICTURES)/Screenshots" ] && mkdir -p "$(xdg-user-dir PICTURES)/Screenshots"
 
- scrot '%s.png' -e 'mv $f ~/var/Pictures/'
+scrot '%s.png' -e 'mv $f $$(xdg-user-dir PICTURES)/Screenshots/'
 
