@@ -7,5 +7,5 @@
 
 [ -d ~/var/Pictures ] && [ -x "$(command -v scrot)" ] || exit 1
 
-scrot '%s.png' -e 'mv  ~/var/Pictures/'
+ scrot '%s.png' -e 'mv $f ~/var/Pictures/'
 
