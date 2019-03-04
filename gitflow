@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# git workflow
+# git workflow functions
 #
 
 git_check()
