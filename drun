@@ -1,0 +1,12 @@
+#!/bin/sh
+
+#
+# http://gitlab.com/morgaux/bin
+#
+
+[ -x "$(command -v dmenu)" ] || err "$0: dmenu not found" || exit 1
+
+CMD="$(echo | dmenu -p "Enter a command: " -b)"
+
+tt -e "$CMD"
+

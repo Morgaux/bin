@@ -2,9 +2,9 @@
 
 #
 # open a tabbed st instance
-# 
+#
 
 [ -x "$(command -v st)" ] && [ -x "$(command -v tabbed)" ] || exit 1
 
-tabbed -c -k -r 2 st -w '' -t 'tabbed terminal'
+tabbed -c -k -r 2 st -w '' -t 'tabbed terminal' $@
 
