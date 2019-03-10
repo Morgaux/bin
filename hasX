@@ -1,0 +1,12 @@
+#!/bin/sh
+
+#
+# http:/gitlab.com/morgaux/bin
+#
+
+# is X/Xorg/X11 running?
+
+[ -x "$(command -v xset)" ] && [ ! xset q >/dev/null 2>&1 ] || exit 1
+
+exit 0
+
