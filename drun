@@ -8,7 +8,5 @@ hasX || err "X not running" || exit 1
 
 [ -x "$(command -v dmenu)" ] || err "dmenu not found" || exit 1
 
-CMD="$(echo | dmenu -p "Enter a command: " -b)"
-
-tt -e "$CMD"
+st -e "$(echo | dmenu -p "Enter a command: " -b)"
 
