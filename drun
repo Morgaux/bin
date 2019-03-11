@@ -4,9 +4,9 @@
 # http://gitlab.com/morgaux/bin
 #
 
-hasX || err "$0: X not running" || exit 1
+hasX || err "X not running" || exit 1
 
-[ -x "$(command -v dmenu)" ] || err "$0: dmenu not found" || exit 1
+[ -x "$(command -v dmenu)" ] || err "dmenu not found" || exit 1
 
 CMD="$(echo | dmenu -p "Enter a command: " -b)"
 

@@ -4,9 +4,9 @@
 # open a tabbed st instance
 #
 
-hasX || err "$0: X not running" || exit 1
+hasX || err "X not running" || exit 1
 
-[ -x "$(command -v st)" ] && [ -x "$(command -v tabbed)" ] || exit 1
+[ -x "$(command -v st)" ] && [ -x "$(command -v tabbed)" ] || err "suckless tools not found" || exit 1
 
 tabbed -c -k -r 2 st -w '' -t 'tabbed terminal' $@
 
