@@ -6,7 +6,8 @@
 
 hasX || err "X not running" || exit 1
 
-[ -x "$(command -v st)" ] && [ -x "$(command -v tabbed)" ] || err "suckless tools not found" || exit 1
+[ -x "$(command -v st)" ] || err "suckless terminal not found" || exit 1
+[ -x "$(command -v tabbed)" ] || err "tabbed not found" || exit 1
 
 tabbed -c -k -r 2 st -w '' -t 'tabbed terminal' $@
 
