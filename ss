@@ -4,6 +4,8 @@
 # save a Screen Shot
 #
 
+hasX || err "$0: X not running" || exit 1
+
 [ -x "$(command -v scrot)" ] && [ -x "$(command -v xdg-user-dir)" ] || exit 1
 [ -d "$(xdg-user-dir PICTURES)/Screenshots" ] && mkdir -p "$(xdg-user-dir PICTURES)/Screenshots"
 
