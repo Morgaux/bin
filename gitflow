@@ -6,8 +6,8 @@
 
 git_check()
 {
-[ -x "$(command -v git)" ] || err "$0: git not found, plase install" || return 1
-[ -d "./.git" ] || err "$0: not in a git repo dir" || return 1
+[ -x "$(command -v git)" ] || err "git not found, please install" || return 1
+[ -d "./.git" ] || err "working dir is not in a git repo" || return 1
 }
 
 git_edit()

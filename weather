@@ -4,5 +4,5 @@
 # fetch the weather
 #
 
-curl -s wttr.in | head -n 7 || err "weather: an error occured"
+curl -s wttr.in | head -n 7 || err "an error occured"
 

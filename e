@@ -4,5 +4,5 @@
 # Edit a file with the prefered editor
 #
 
-[ ! -z "$EDITOR" ] && env "$EDITOR" "$@"
+[ ! -z "$EDITOR" ] || err "EDITOR not set" && env "$EDITOR" "$@"
 

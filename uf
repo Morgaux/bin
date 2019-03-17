@@ -4,22 +4,25 @@
 # Execute apropriate ufetch, depends on ufetch-* in PATH
 #
 
-OSLST="alpine arch debian fedora manjaro mint mxlinux raspbian ubuntu viod"
+OSLST="alpine arch debian fedora manjaro mint mxlinux raspbian ubuntu void"
 
 # Linux
 for i in $(echo "$OSLST" | tr " " "\n"); do
 	if grep -q -i "$i" /etc/*release*; then
-		ufetch-"$i" 2> /dev/null && exit $?
+		ufetch-"$i" 2> /dev/null || continue
+		exit $?
 	fi
 done
 
+# Unix
 for i in freebsd openbsd linux ; do
 	if uname -a | grep -q -i $i ; then
-		ufetch-$i 2> /dev/null && exit $?
+		ufetch-$i 2> /dev/null || continue
+		exit $?
 	fi
 done
 
-err "uf: ufetch not found"
+err "ufetch not found"
 
 exit 1
 
