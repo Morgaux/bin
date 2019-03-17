@@ -16,7 +16,7 @@ git_check || return 1
 
 e "$@"
 git add "$@"
-git commit -m "Updated $@ $(date +%F)"
+git commit -m "Updated $* $(date +%F)"
 }
 
 git_push()
