@@ -1,6 +1,15 @@
 [Desktop Entry]
+
+# Application details
 Name=st
+Type=Application
+Comment=Suckless Terminal
+
+# Execution details
 Exec=st
 Terminal=false
+
+# Other
 Icon=utilities-terminal
-Type=Application
+
+X-Desktop-File-Install-Version=0.23
