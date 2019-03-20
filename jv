@@ -4,5 +4,50 @@
 # Java compile and run in one step
 #
 
-javac "$1" && java "${1%.*}"
+#
+# assuming PWD is /path/to/project/ with bin/ and src/ on the same level as CWD
+# javac -d bin/ src/pkg/*.java && cd bin && java pkg.MainClass && cd ..
+# puts *.class in /path/to/project/bin/pkg/
+#
+
+usage() {
+	echo "	$(basename $0) - Compile and Run java code in one step"
+	echo "	"
+	echo "	usage:"
+	echo "		jv [OPTIONS] [PACKAGE] [MAINCLASS]"
+	echo "		jv [OPTIONS] [JAVAFILE]"
+	echo "	"
+	exit 0
+}
+
+[ "$#" -eq 0 ] && usage
+
+[ "$1" = "-h" ] && usage
+
+#
+# if only one arg, arg is foo.java, assume bin and src dir ARE the curent dir:
+#	javac "$1" && java "${1%.*}"
+#
+if [ "$#" -eq 1 ] ; then
+	javac "$1" || err "Compilation failure" || exit 1
+	java "${1%.*}"
+	exit $?
+fi
+
+#
+# if two args, arg1 is pkg part of src/pkg/*.java arg2 is class part of pkg.MainClass
+#	assume bin and src ARE IN the curent dir:
+#	javac -d "bin/" "src/$1/*.java" && ( cd bin; java "$1.$2"; )
+#
+if [ "$#" -eq 2 ] ; then
+	for i in "bin/$1" "src/$1"; do
+		[ -d "$i" ] || err "$i directory missing" || 1
+	done
+
+	javac -d bin src/"$1"/*.java || err "Compilation failure" || exit 1
+	( cd bin; java "$1.$2"; )
+	exit $?
+fi
+
+err "options $* not found or recognised, try $(basename $0) -h"
 
