@@ -8,6 +8,7 @@
 PARENT="$(ps -o comm= $PPID)"
 
 echo "$PARENT: $ERRMSG" 1>&2
+log "error in $PARENT: $ERRMSG"
 
 exit 1
 
