@@ -8,11 +8,21 @@
 # log a message to ~/var/log
 ##
 
-[ -d ~/var ] || mkdir -p ~/var
+while [ "$#" -gt 0 ]; do
+	case $1 in
+		"-h"|"--help")
+			echo "log - log a message to ~/var/log"
+			exit 0;;
+		*)
+			break;;
+	esac
+done
+
+[ -d "$HOME/var" ] || mkdir -p "$HOME/var"
 
 STAMP="$(date +%x' '%X)"
 PARENT="$(ps -o comm= $PPID)"
 MSG="$@"
 
-echo "$STAMP : $PARENT : $MSG" >> ~/var/log
+[ ! "$MSG" = "" ] && echo "$STAMP : $PARENT : $MSG" >> ~/var/log
 
