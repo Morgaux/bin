@@ -4,11 +4,10 @@
 # print message to stderr
 #
 
-ERRMSG="$@"
+[ $# -gt 0 ] && ERRMSG="$@" || ERRMSG="error"
 PARENT="$(ps -o comm= $PPID)"
 
-[ ! "$ERRMSG" = "" ] || err "no error message given" || exit 1
-[ ! "$PARENT" = "" ] && echo "$PARENT: $ERRMSG" 1>&2 || echo "$ERRMSG" 1>&2
+echo "$PARENT: $ERRMSG" 1>&2
 
 exit 1
 
