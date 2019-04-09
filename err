@@ -4,7 +4,7 @@
 # print message to stderr
 #
 
-[ $# -gt 0 ] && ERRMSG="$@" || ERRMSG="error"
+[ $# -gt 0 ] && ERRMSG="$@" || ERRMSG="generic error"
 PARENT="$(ps -o comm= $PPID)"
 
 echo "$PARENT: $ERRMSG" 1>&2
