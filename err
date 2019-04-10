@@ -8,7 +8,7 @@
 PARENT="$(ps -o comm= $PPID)"
 
 echo "$PARENT: $ERRMSG" 1>&2
-log "error in $PARENT: $ERRMSG"
+log "$(ps hf -opid,cmd -C "$$" | awk '$2 !~ /^[|\\]/ { print $1 }' | xargs -L 1 ps -o comm= | awk '{printf "%s"" > ",$0}' | sed 's/ > err > xargs > awk > sed > ps >//g') : $ERRMSG"
 
 exit 1
 

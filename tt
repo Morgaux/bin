@@ -4,7 +4,7 @@
 # open a tabbed st instance
 #
 
-hasX || exit 1
+hasX || err "no X running..." || exit 1
 
 [ -x "$(command -v st)" ] || err "suckless terminal not found" || exit 1
 [ -x "$(command -v tabbed)" ] || err "tabbed not found" || exit 1
