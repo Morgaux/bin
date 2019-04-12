@@ -1,0 +1,15 @@
+#!/bin/sh
+
+#
+# http://gitlab.com/morgaux/bin
+#
+
+##
+# script before git commands
+##
+
+log "running $@"
+
+# run the git command
+git $@
+

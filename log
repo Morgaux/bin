@@ -1,0 +1,28 @@
+#!/bin/sh
+
+#
+# http://gitlab.com/morgaux/bin
+#
+
+##
+# log a message to ~/var/log
+##
+
+log_mesg() {
+	STAMP="$(date +%F' '%X)"
+	PARENT="$(ps -o comm= $PPID)"
+	MSG="$@"
+
+	[ -d "$HOME/var" ] || mkdir -p "$HOME/var"
+	[ ! "$MSG" = "" ] && echo "$STAMP : $PARENT : $MSG" >> ~/var/log
+}
+
+show_log() {
+	tail -n $1 ~/var/log && return 0
+	tail ~/var/log && return 0
+	err "log cannot be viewed"
+	retun 1
+}
+
+log_mesg "$@"
+
