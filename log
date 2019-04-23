@@ -9,7 +9,7 @@
 ##
 
 log_mesg() {
-	STAMP="$(date +%F' '%X)"
+	STAMP="$(date +%s)"
 	PARENT="$(ps -o comm= $PPID)"
 	MSG="$@"
 
