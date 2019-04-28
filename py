@@ -1,4 +1,5 @@
 #!/bin/sh
+#http://gitlab.com/morgaux/bin
 
 #
 # Python3 file: edit  and run in one step

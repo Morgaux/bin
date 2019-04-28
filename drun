@@ -1,7 +1,8 @@
 #!/bin/sh
+#http://gitlab.com/morgaux/bin
 
 #
-# http://gitlab.com/morgaux/bin
+# dmenu based command launcher
 #
 
 hasX || err "X not running" || exit 1

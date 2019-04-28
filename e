@@ -1,4 +1,5 @@
 #!/bin/sh
+#http://gitlab.com/morgaux/bin
 
 #
 # Edit a file with the prefered editor
