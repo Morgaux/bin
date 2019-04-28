@@ -1,0 +1,8 @@
+#!/bin/sh
+
+#
+# print public ip and a \n
+#
+
+curl ifconfig.me/ip && echo
+
