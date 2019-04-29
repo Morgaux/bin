@@ -2,12 +2,8 @@
 #http://gitlab.com/morgaux/bin
 
 #
-# http://gitlab.com/morgaux/bin
-#
-
-##
 # log a message to ~/var/log
-##
+#
 
 log_mesg() {
 	STAMP="$(date +%s)"
