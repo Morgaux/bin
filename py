@@ -2,10 +2,10 @@
 #http://gitlab.com/morgaux/bin
 
 #
-# Python3 file: edit and run in one step
+# Run a Python3 script
 #
 
-[ -x "$(command -v python3)" ] || exit 1
+[ -x "$(command -v python3)" ] || err "Python3 not found, please install" || exit 1
 
-e "$1" && python3 "$1"
+python3 "$@"
 

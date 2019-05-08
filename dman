@@ -2,7 +2,7 @@
 #http://gitlab.com/morgaux/bin
 
 #
-# slmenu based man searcher
+# slmenu based man page searcher
 #
 
 [ -x "$(command -v slmenu)" ] || err "slmenu not installed" || exit 1
@@ -17,5 +17,5 @@ MAN_PAGE="$(man -k "$SEARCH" | awk '{print $1}' | slmenu -i -l 5 -p 'dman:')"
 
 log "$MAN_PAGE man page selected"
 
-man "$MAN_PAGE"
+man "$MAN_PAGE" || err "Could not display $MAN_PAGE"
 
