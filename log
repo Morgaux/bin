@@ -1,12 +1,9 @@
 #!/bin/sh
+#http://gitlab.com/morgaux/bin
 
 #
-# http://gitlab.com/morgaux/bin
-#
-
-##
 # log a message to ~/var/log
-##
+#
 
 log_mesg() {
 	STAMP="$(date +%s)"
@@ -18,15 +15,39 @@ log_mesg() {
 }
 
 show_log() {
-	tail -n $1 ~/var/log && return 0
-	tail ~/var/log && return 0
+	tail -n $1 ~/var/log 2>/dev/null && return 0
+	tail ~/var/log 2>/dev/null && return 0
 	err "log cannot be viewed"
-	retun 1
+	exit 1
 }
 
+<<<<<<< HEAD
 trim_log() {
 	SIZE="$(wc -c ~/var/log | awk '{print $1}')"
 }
 
+=======
+usage() {
+	echo "log - log a message to ~/var/log"
+	echo "usage: log [ -h | --help ] [ --show ] [ MSG ]"
+	echo "options:"
+	echo "	-h	--help		show this message"
+	echo "	--show			show the last 10 logs"
+	echo "	--show LINES		show the last LINES logs"
+	exit 1
+}
+
+while true; do
+	case $1 in
+		-*) case $1 in
+			"--show") show_log; shift;;
+			"-h"|"--help") usage;;
+			*) err "unknown option: $1" || exit 1;;
+		esac;;
+		*) break;;
+	esac
+done
+
+>>>>>>> c7114c60e098b800379abf172e7b1aa5cc26ec46
 log_mesg "$@"
 

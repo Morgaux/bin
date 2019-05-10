@@ -1,17 +1,35 @@
 #!/bin/sh
+#http://gitlab.com/morgaux/bin
 
 #
-# http://gitlab.com/morgaux/bin
+# dmenu based command launcher
 #
 
-hasX || err "X not running" || exit 1
+MENU=""
+RUNNER=""
 
-[ -x "$(command -v dmenu)" ] || err "dmenu not found" || exit 1
-[ -x "$(command -v st)" ] || err "st not found" || exit 1
+if hasX; then
+	# Choose menu util
+	[ -x "$(command -v dmenu)" ] || err "dmenu not found" || exit 1
+	MENU="$(command -v dmenu)"
 
-CMD="$(echo | dmenu -p "Enter a command: ") -b)"
+	# Choose term util
+	[ -x "$(command -v st)" ] || err "st not found" || exit 1
+	RUNNER="$(command -v st) -e"
+else
+	# Choose menu util
+	[ -x "$(command -v slmenu)" ] || err "slmenu not found" || exit 1
+	MENU="$(command -v slmenu)"
+
+	# Choose term util
+	RUNNER="/bin/sh -c" # just run the command, no term
+fi
+
+# Get command
+CMD="$(echo "$*" | tr " "  "\n" | "$MENU" -p 'Enter a command: ' -b)"
 
 log "running command: $CMD"
 
-st -e "$CMD"
+# Run command
+$RUNNER "$CMD"
 

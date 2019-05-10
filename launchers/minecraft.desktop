@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Minecraft
+Type=Application
+Comment=Launch Minecraft
+Exec=mine
+Terminal=false
+Icon=minecraft
+X-Desktop-File-Install-Version=0.23
+GenericName[en_US.UTF-8]=Minecraft Launcher

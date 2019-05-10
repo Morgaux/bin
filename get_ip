@@ -1,4 +1,5 @@
 #!/bin/sh
+#http://gitlab.com/morgaux/bin
 
 #
 # print public ip and a \n

@@ -1,12 +1,9 @@
 #!/bin/sh
+#http://gitlab.com/morgaux/bin
 
 #
-# http://gitlab.com/morgaux/bin
+# Wrapper script for git commands
 #
-
-##
-# script before git commands
-##
 
 log "running $@"
 

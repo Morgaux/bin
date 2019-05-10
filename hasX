@@ -1,10 +1,9 @@
 #!/bin/sh
+#http://gitlab.com/morgaux/bin
 
 #
-# http:/gitlab.com/morgaux/bin
-#
-
 # is X/Xorg/X11 running?
+#
 
 if ! xset q >/dev/null 2>&1; then
 	log "X is not running"
