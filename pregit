@@ -11,5 +11,5 @@
 log "running $@"
 
 # run the git command
-git $@
+git "$@"
 
