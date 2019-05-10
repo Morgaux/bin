@@ -21,12 +21,10 @@ show_log() {
 	exit 1
 }
 
-<<<<<<< HEAD
 trim_log() {
 	SIZE="$(wc -c ~/var/log | awk '{print $1}')"
 }
 
-=======
 usage() {
 	echo "log - log a message to ~/var/log"
 	echo "usage: log [ -h | --help ] [ --show ] [ MSG ]"
@@ -48,6 +46,5 @@ while true; do
 	esac
 done
 
->>>>>>> c7114c60e098b800379abf172e7b1aa5cc26ec46
 log_mesg "$@"
 
