@@ -19,5 +19,10 @@ echo "$$" > "$PIDFILE" || err "Could not create PID file" || exit 1
 # if they're different, use git pull
 # if the same, pass
 
+[ "$#" -gt 0 ] && for REPO in "$(echo "$@" | tr ' ' '\n')" ; do
+	[ -d "$REPO" ] || continue
+	echo "$REPO"
+done
+
 rm "$PIDFILE"
 
