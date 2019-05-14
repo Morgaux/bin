@@ -12,16 +12,25 @@ fi
 
 echo "$$" > "$PIDFILE" || err "Could not create PID file" || exit 1
 
+[ -x "$(command -v git)" ] || err "git is not insalled" || exit 1
+
 # given a list of paths to repos
 # for each repo
-# get remote HEAD commit id - git ls-remote $(git config --get remote.origin.url) HEAD
-# compare the id with local HEAD - git rev-parse HEAD
+# get remote HEAD commit id
+# compare the id with local HEAD
 # if they're different, use git pull
 # if the same, pass
 
 [ "$#" -gt 0 ] && for REPO in "$(echo "$@" | tr ' ' '\n')" ; do
 	[ -d "$REPO" ] || continue
-	echo "$REPO"
+	curent_dir="$PWD"
+	cd "$REPO"
+	remote_url="$(git config --get remote.origin.url)"
+	remote_head="$(git ls-remote $remote_url HEAD | awk '{print $1}')"
+	local_head="$(git rev-parse HEAD)"
+	[ "$remote_head" = "$local_head" ] && continue
+	git pull || err "could not complete pull"
+	cd "$current_dir"
 done
 
 rm "$PIDFILE"
