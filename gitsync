@@ -19,5 +19,5 @@ echo "$$" > "$PIDFILE" || err "Could not create PID file" || exit 1
 # if they're different, use git pull
 # if the same, pass
 
-rm $PIDFILE
+rm "$PIDFILE"
 
