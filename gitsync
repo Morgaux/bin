@@ -1,0 +1,23 @@
+#!/bin/sh
+
+##
+# sync local git repo
+##
+
+PIDFILE="$HOME/var/$(basename $0).pid"
+
+if [ -f "$PIDFILE" ] ; then
+	ps -p "$(cat $PIDFILE)" >/dev/null 2>&1 && err "Process already running" || exit 1
+fi
+
+echo "$$" > "$PIDFILE" || err "Could not create PID file" || exit 1
+
+# given a list of paths to repos
+# for each repo
+# get remote HEAD commit id
+# compare the id with local HEAD
+# if they're different, use git pull
+# if the same, pass
+
+rm $PIDFILE
+
