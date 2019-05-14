@@ -30,7 +30,27 @@ log "checking dependencies..."
 # if they're different, use git pull
 # if the same, pass
 
-[ "$#" -gt 0 ] && for REPO in "$(echo "$@" | tr ' ' '\n')" ; do
+usage() {
+	echo "$SELF - sync your git repos"
+	echo ""
+	echo "usage:"
+	echo "	$SELF [OPTIONS] PATH ..."
+	echo ""
+	echo "PATH:"
+	echo "	A vaild path to a valid git repository. One or more may"
+	echo "	be given separated by spaces. Paths are assumed to be"
+	echo "	relavite to './' but may be given as absolute, '/' for"
+	echo "	root and '~/' for home."
+	echo ""
+	echo "OPTIONS:"
+	echo "	NONE YET"
+	echo ""
+	exit 0
+}
+
+[ "$#" -gt 0 ] || usage
+
+for REPO in "$(echo "$@" | tr ' ' '\n')" ; do
 	[ -d "$REPO" ] || err "$REPO is not a valid directory" || continue
 	[ -d "$REPO/.git" ] || err "$REPO is not a valid repository" || continue
 	CURENT_DIR="$PWD"
