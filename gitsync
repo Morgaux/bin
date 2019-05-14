@@ -14,8 +14,8 @@ echo "$$" > "$PIDFILE" || err "Could not create PID file" || exit 1
 
 # given a list of paths to repos
 # for each repo
-# get remote HEAD commit id
-# compare the id with local HEAD
+# get remote HEAD commit id - git ls-remote $(git config --get remote.origin.url) HEAD
+# compare the id with local HEAD - git rev-parse HEAD
 # if they're different, use git pull
 # if the same, pass
 
