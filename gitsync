@@ -4,15 +4,24 @@
 # sync local git repo
 ##
 
-PIDFILE="$HOME/var/$(basename $0).pid"
+SELF="$(basename $0)"
+PIDFILE="$HOME/var/${SELF}.pid"
+
+log "$SELF using $PIDFILE as PID file"
 
 if [ -f "$PIDFILE" ] ; then
+	log "PID file found: $(cat $PIDFILE)"
+	log "checking running proccesses..."
 	ps -p "$(cat $PIDFILE)" >/dev/null 2>&1 && err "Process already running" || exit 1
+	log "no proccess found, removing PID file."
+	rm "$PIDFILE"
 fi
 
+log "creating PID file"
 echo "$$" > "$PIDFILE" || err "Could not create PID file" || exit 1
 
-[ -x "$(command -v git)" ] || err "git is not insalled" || exit 1
+log "checking dependencies..."
+[ -x "$(command -v git)" ] || err "git is not installed" || exit 1
 
 # given a list of paths to repos
 # for each repo
@@ -22,16 +31,22 @@ echo "$$" > "$PIDFILE" || err "Could not create PID file" || exit 1
 # if the same, pass
 
 [ "$#" -gt 0 ] && for REPO in "$(echo "$@" | tr ' ' '\n')" ; do
-	[ -d "$REPO" ] || continue
-	curent_dir="$PWD"
+	[ -d "$REPO" ] || err "$REPO is not a valid directory" || continue
+	[ -d "$REPO/.git" ] || err "$REPO is not a valid repository" || continue
+	CURENT_DIR="$PWD"
+	log "entering $REPO..."
 	cd "$REPO"
-	remote_url="$(git config --get remote.origin.url)"
-	remote_head="$(git ls-remote $remote_url HEAD | awk '{print $1}')"
-	local_head="$(git rev-parse HEAD)"
-	[ "$remote_head" = "$local_head" ] && continue
+	URL="$(git config --get remote.origin.url)"
+	REMOTE="$(git ls-remote $URL HEAD | awk '{print $1}')"
+	LOCAL="$(git rev-parse HEAD)"
+	[ "$REMOTE" = "$LOCAL" ] && log "remote head and local match" && continue
 	git pull || err "could not complete pull"
-	cd "$current_dir"
+	cd "$CURENT_DIR"
+	log "exiting $REPO..."
 done
 
-rm "$PIDFILE"
+log "done, removing PID file"
+rm "$PIDFILE" || err "could not remove PID file" || exit 1
+
+exit 0
 
