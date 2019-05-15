@@ -1,0 +1,72 @@
+#!/bin/sh
+
+##
+# sync local git repo
+##
+
+SELF="$(basename $0)"
+PIDFILE="$HOME/var/${SELF}.pid"
+
+log "$SELF using $PIDFILE as PID file"
+
+if [ -f "$PIDFILE" ] ; then
+	log "PID file found: $(cat $PIDFILE)"
+	log "checking running proccesses..."
+	ps -p "$(cat $PIDFILE)" >/dev/null 2>&1 && err "Process already running" || exit 1
+	log "no proccess found, removing PID file."
+	rm "$PIDFILE"
+fi
+
+log "creating PID file"
+echo "$$" > "$PIDFILE" || err "Could not create PID file" || exit 1
+
+log "checking dependencies..."
+[ -x "$(command -v git)" ] || err "git is not installed" || exit 1
+
+# given a list of paths to repos
+# for each repo
+# get remote HEAD commit id
+# compare the id with local HEAD
+# if they're different, use git pull
+# if the same, pass
+
+usage() {
+	echo "$SELF - sync your git repos"
+	echo ""
+	echo "usage:"
+	echo "	$SELF [OPTIONS] PATH ..."
+	echo ""
+	echo "PATH:"
+	echo "	A vaild path to a valid git repository. One or more may"
+	echo "	be given separated by spaces. Paths are assumed to be"
+	echo "	relavite to './' but may be given as absolute, '/' for"
+	echo "	root and '~/' for home."
+	echo ""
+	echo "OPTIONS:"
+	echo "	NONE YET"
+	echo ""
+	exit 0
+}
+
+[ "$#" -gt 0 ] || usage
+
+for REPO in "$(echo "$@" | tr ' ' '\n')" ; do
+	[ -d "$REPO" ] || err "$REPO is not a valid directory" || continue
+	[ -d "$REPO/.git" ] || err "$REPO is not a valid repository" || continue
+	CURENT_DIR="$PWD"
+	log "entering $REPO..."
+	cd "$REPO"
+	URL="$(git config --get remote.origin.url)"
+	REMOTE="$(git ls-remote $URL HEAD | awk '{print $1}')"
+	LOCAL="$(git rev-parse HEAD)"
+	[ "$REMOTE" = "$LOCAL" ] && log "remote head and local match" && continue
+	git pull || err "could not complete pull"
+	cd "$CURENT_DIR"
+	log "exiting $REPO..."
+done
+
+log "done, removing PID file"
+rm "$PIDFILE" || err "could not remove PID file" || exit 1
+
+exit 0
+

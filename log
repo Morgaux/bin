@@ -5,11 +5,11 @@
 # log a message to ~/var/log
 #
 
-log_mesg() {
-	STAMP="$(date +%s)"
-	PARENT="$(ps -o comm= $PPID)"
-	MSG="$@"
+STAMP="$(date +%s)"
+PARENT="$(ps -o comm= $PPID)"
 
+log_mesg() {
+	MSG="$@"
 	[ -d "$HOME/var" ] || mkdir -p "$HOME/var"
 	[ ! "$MSG" = "" ] && echo "$STAMP : $PARENT : $MSG" >> ~/var/log
 }
@@ -23,6 +23,11 @@ show_log() {
 
 trim_log() {
 	SIZE="$(wc -c ~/var/log | awk '{print $1}')"
+	log "Cutting logfile..."
+	tail -n 498 ~/var/log 2>/dev/null 1>~/var/.log.tmp && log "tmp log created" || exit 1
+	rm ~/var/log || exit 1
+	mv ~/var/.log.tmp ~/var/log && log "logfile restored" || exit 1
+	log "Logfile cut"
 }
 
 usage() {
@@ -32,15 +37,17 @@ usage() {
 	echo "	-h	--help		show this message"
 	echo "	--show			show the last 10 logs"
 	echo "	--show LINES		show the last LINES logs"
+	echo "	--cut			cut log file 500 lines"
 	exit 1
 }
 
 while true; do
 	case $1 in
 		-*) case $1 in
-			"--show") show_log; shift;;
-			"-h"|"--help") usage;;
-			*) err "unknown option: $1" || exit 1;;
+			"--show")	show_log; shift;;
+			"-h"|"--help")	usage;;
+			"--cut")	trim_log; shift;;
+			*)	err "unknown option: $1" || exit 1;;
 		esac;;
 		*) break;;
 	esac
