@@ -40,7 +40,7 @@ usage() {
 	echo "	A vaild path to a valid git repository. One or more may"
 	echo "	be given separated by spaces. Paths are assumed to be"
 	echo "	relavite to './' but may be given as absolute, '/' for"
-	echo "	root and '~/' for home."
+	echo "	root."
 	echo ""
 	echo "OPTIONS:"
 	echo "	NONE YET"
@@ -50,7 +50,9 @@ usage() {
 
 [ "$#" -gt 0 ] || usage
 
-for REPO in "$(echo "$@" | tr ' ' '\n')" ; do
+while [ "$#" -gt 0 ] ; do
+	REPO="${1/#\~/$HOME}"
+	shift
 	[ -d "$REPO" ] || err "$REPO is not a valid directory" || continue
 	[ -d "$REPO/.git" ] || err "$REPO is not a valid repository" || continue
 	CURENT_DIR="$PWD"
