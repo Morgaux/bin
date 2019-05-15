@@ -12,7 +12,7 @@ log "$SELF using $PIDFILE as PID file"
 if [ -f "$PIDFILE" ] ; then
 	log "PID file found: $(cat $PIDFILE)"
 	log "checking running proccesses..."
-	ps -p "$(cat $PIDFILE)" >/dev/null 2>&1 && err "Process already running" || exit 1
+	ps -p "$(cat $PIDFILE)" >/dev/null 2>&1 && { err "Process already running" || exit 1; }
 	log "no proccess found, removing PID file."
 	rm "$PIDFILE"
 fi
@@ -51,7 +51,7 @@ usage() {
 [ "$#" -gt 0 ] || usage
 
 while [ "$#" -gt 0 ] ; do
-	REPO="${1/#\~/$HOME}"
+	REPO=$(echo $1) #"${1/#\~/$HOME}"
 	shift
 	[ -d "$REPO/.git" ] || err "$REPO is not a valid repository" || continue
 	CURENT_DIR="$PWD"
