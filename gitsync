@@ -53,7 +53,6 @@ usage() {
 while [ "$#" -gt 0 ] ; do
 	REPO="${1/#\~/$HOME}"
 	shift
-	[ -d "$REPO" ] || err "$REPO is not a valid directory" || continue
 	[ -d "$REPO/.git" ] || err "$REPO is not a valid repository" || continue
 	CURENT_DIR="$PWD"
 	log "entering $REPO..."
