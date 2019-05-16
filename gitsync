@@ -21,15 +21,14 @@ fi
 log "creating PID file"
 echo "$$" > "$PIDFILE" || err "Could not create PID file" || exit 1
 
+##
+#
+# Begin daemonizable code
+#
+##
+
 log "checking dependencies..."
 [ -x "$(command -v git)" ] || err "git is not installed" || exit 1
-
-# given a list of paths to repos
-# for each repo
-# get remote HEAD commit id
-# compare the id with local HEAD
-# if they're different, use git pull
-# if the same, pass
 
 usage() {
 	echo "$SELF - sync your git repos"
@@ -72,6 +71,12 @@ while [ "$#" -gt 0 ] ; do
 	cd "$CURENT_DIR"
 	log "exiting $REPO..."
 done
+
+##
+#
+# End daemonizable code
+#
+##
 
 log "done, removing PID file"
 rm "$PIDFILE" || err "could not remove PID file" || exit 1
