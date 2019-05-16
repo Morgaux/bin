@@ -5,7 +5,7 @@
 # log a message to ~/var/log
 #
 
-STAMP="$(date +%s)"
+STAMP="$(date +%D%H%M%S)"
 PARENT="$(ps -o comm= $PPID)"
 
 log_mesg() {
