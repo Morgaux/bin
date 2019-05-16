@@ -6,6 +6,7 @@
 
 SELF="$(basename $0)"
 PIDFILE="$HOME/var/${SELF}.pid"
+CURENT_DIR="$PWD"
 
 log "$SELF using $PIDFILE as PID file"
 
@@ -51,15 +52,16 @@ usage() {
 [ "$#" -gt 0 ] || usage
 
 while [ "$#" -gt 0 ] ; do
+	cd "$CURENT_DIR"
+
 	case "$1" in
 		"~"*)	REPO="$(echo $1)";; # expand ~/
 		"/"*)	REPO="$1";;
-		*)	REPO="./$1";;
+		*)	REPO="$1";;
 	esac
 	shift
 
 	[ -d "$REPO/.git" ] || err "$REPO is not a valid repository" || continue
-	CURENT_DIR="$PWD"
 	log "entering $REPO..."
 	cd "$REPO"
 	URL="$(git config --get remote.origin.url)"
