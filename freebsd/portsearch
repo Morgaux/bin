@@ -1,0 +1,1 @@
+echo /usr/ports/*/*java* | tr ' ' '\n' | sed 's/\/usr\/ports\///g'
