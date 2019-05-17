@@ -1,1 +1,9 @@
-echo /usr/ports/*/*java* | tr ' ' '\n' | sed 's/\/usr\/ports\///g'
+#!/bin/sh
+#http://gitlab.com/morgaux/bin
+
+##
+# Search the ports tree
+##
+
+echo "/usr/ports/*/*$@*" | tr ' ' '\n' | sed 's/\/usr\/ports\///g'
+
