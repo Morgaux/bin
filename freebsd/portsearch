@@ -5,5 +5,5 @@
 # Search the ports tree
 ##
 
-echo "/usr/ports/*/*$@*" | tr ' ' '\n' | sed 's/\/usr\/ports\///g'
+echo /usr/ports/*/*"$1"* | tr ' ' '\n' | sed 's/\/usr\/ports\///g'
 

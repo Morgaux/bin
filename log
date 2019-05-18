@@ -8,6 +8,7 @@
 # STAMP format is two numbers, the date and the number of seconds elapsed that day
 STAMP="$(date +%y%m%d)-$(echo `expr $(date +%s) % 86400`)"
 PARENT="$(ps -o comm= $PPID)"
+SIZE="$(wc -l ~/var/log | awk '{print $1}')"
 
 log_mesg() {
 	MSG="$@"
@@ -23,7 +24,6 @@ show_log() {
 }
 
 trim_log() {
-	SIZE="$(wc -c ~/var/log | awk '{print $1}')"
 	log "Cutting logfile..."
 	tail -n 498 ~/var/log 2>/dev/null 1>~/var/.log.tmp && log "tmp log created" || exit 1
 	rm ~/var/log || exit 1
@@ -39,8 +39,10 @@ usage() {
 	echo "	--show			show the last 10 logs"
 	echo "	--show LINES		show the last LINES logs"
 	echo "	--cut			cut log file 500 lines"
-	exit 1
+	exit 0
 }
+
+[ "$#" -gt 0 ] || exit 0
 
 while true; do
 	case $1 in
