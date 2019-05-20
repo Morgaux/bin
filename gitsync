@@ -7,6 +7,7 @@
 SELF="$(basename $0)"
 PIDFILE="$HOME/var/${SELF}.pid"
 CURENT_DIR="$PWD"
+PATH="$HOME/bin:$PATH"
 
 log "$SELF using $PIDFILE as PID file"
 
