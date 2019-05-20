@@ -1,0 +1,26 @@
+#!/bin/sh
+
+##
+# daemon template
+##
+
+SELF="$(basename $0)"
+PIDFILE="$HOME/var/${SELF}.pid"
+CURENT_DIR="$PWD"
+PATH="$HOME/bin:$PATH"
+
+if [ -f "$PIDFILE" ] ; then
+	ps -p "$(cat $PIDFILE)" >/dev/null 2>&1 && exit 1
+	rm "$PIDFILE"
+fi
+
+echo "$$" > "$PIDFILE" || exit 1
+
+##
+# daemonizable code
+##
+
+rm "$PIDFILE" || exit 1
+
+exit 0
+
