@@ -6,7 +6,7 @@
 #
 
 # STAMP format is two numbers, the date and the number of seconds elapsed that day
-STAMP="$(date +%y%m%d)-$(echo `expr $(date +%s) % 86400`)"
+STAMP="$(date +%c)"
 PARENT="$(ps -o comm= $PPID)"
 
 log_mesg() {
