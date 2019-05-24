@@ -5,7 +5,6 @@
 # log a message to ~/var/log
 #
 
-# STAMP format is two numbers, the date and the number of seconds elapsed that day
 STAMP="$(date +%c)"
 PARENT="$(ps -o comm= $PPID)"
 
@@ -17,17 +16,17 @@ log_mesg() {
 
 show_log() {
 	tail -n "$1" ~/var/log 2>/dev/null && return 0
-	tail ~/var/log 2>/dev/null && return 1
+	tail -n 10 ~/var/log 2>/dev/null && return 1
 	err "log cannot be viewed"
 	exit 1
 }
 
 trim_log() {
-	log "Cutting logfile..."
+	log "cutting logfile..."
 	tail -n 498 ~/var/log 2>/dev/null 1>~/var/.log.tmp && log "tmp log created" || exit 1
 	rm ~/var/log || exit 1
 	mv ~/var/.log.tmp ~/var/log && log "logfile restored" || exit 1
-	log "Logfile cut"
+	log "logfile cut"
 }
 
 usage() {
