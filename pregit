@@ -5,7 +5,7 @@
 # Wrapper script for git commands
 #
 
-log "running $@"
+log "running $*"
 
 # run the git command
 git "$@"

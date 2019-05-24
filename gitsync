@@ -4,7 +4,7 @@
 # sync local git repo
 ##
 
-SELF="$(basename $0)"
+SELF="$(basename "$0")"
 PIDFILE="$HOME/var/${SELF}.pid"
 CURENT_DIR="$PWD"
 PATH="$HOME/bin:$PATH"
@@ -12,9 +12,9 @@ PATH="$HOME/bin:$PATH"
 log "$SELF using $PIDFILE as PID file"
 
 if [ -f "$PIDFILE" ] ; then
-	log "PID file found: $(cat $PIDFILE)"
+	log "PID file found: $(cat "$PIDFILE")"
 	log "checking running proccesses..."
-	ps -p "$(cat $PIDFILE)" >/dev/null 2>&1 && { err "Process already running" || exit 1; }
+	ps -p "$(cat "$PIDFILE")" >/dev/null 2>&1 && { err "Process already running" || exit 1; }
 	log "no proccess found, removing PID file."
 	rm "$PIDFILE"
 fi
@@ -52,10 +52,10 @@ usage() {
 [ "$#" -gt 0 ] || usage
 
 while [ "$#" -gt 0 ] ; do
-	cd "$CURENT_DIR"
+	cd "$CURENT_DIR" || exit 2
 
 	case "$1" in
-		"~"*)	REPO="$(echo $1)";; # expand ~/
+		"~"*)	REPO="$(echo "$1")";; # expand ~/
 		"/"*)	REPO="$1";;
 		*)	REPO="$1";;
 	esac
@@ -63,13 +63,13 @@ while [ "$#" -gt 0 ] ; do
 
 	[ -d "$REPO/.git" ] || err "$REPO is not a valid repository" || continue
 	log "entering $REPO..."
-	cd "$REPO"
+	cd "$REPO" || cd "$CURENT_DIR" || exit 2
 	URL="$(git config --get remote.origin.url)"
-	REMOTE="$(git ls-remote $URL HEAD | awk '{print $1}')"
+	REMOTE="$(git ls-remote "$URL" HEAD | awk '{print $1}')"
 	LOCAL="$(git rev-parse HEAD)"
 	[ "$REMOTE" = "$LOCAL" ] && log "remote head and local match" && continue
 	git pull || err "could not complete pull"
-	cd "$CURENT_DIR"
+	cd "$CURENT_DIR" || exit 1
 	log "exiting $REPO..."
 done
 

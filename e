@@ -7,9 +7,9 @@
 
 [ ! -z "$EDITOR" ] || err "EDITOR not set" || exit 1
 
-log "$EDITOR $@"
-SELF="$(basename $0)"
-SELF_UPPER="$(echo $SELF | tr '[a-z]' '[A-Z]')"
+log "$EDITOR $*"
+SELF="$(basename "$0")"
+SELF_UPPER="$(echo "$SELF" | tr ':lower:' ':uper:')"
 
 usage() {
 	echo "$SELF - edit a file with \$EDITOR"
@@ -30,7 +30,7 @@ usage() {
 }
 
 run_file() {
-	[ "$#" -gt 0] || err "error in trying to run file, no filename given" || exit 1
+	[ "$#" -gt 0 ] || err "error in trying to run file, no filename given" || exit 1
 }
 
 case $1 in

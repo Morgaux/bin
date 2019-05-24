@@ -9,7 +9,7 @@
 
 SEARCH="."
 
-[ "$#" -gt 0 ] && SEARCH="$@"
+[ "$#" -gt 0 ] && SEARCH="$*"
 
 log "Searching for $SEARCH man page..."
 

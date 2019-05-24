@@ -11,7 +11,7 @@
 ################################################################################
 
 PREFIX="$HOME" # set to / if running with permissions
-SELF="$(basename $0)"
+SELF="$(basename "$0")"
 PIDFILE="$PREFIX/tmp/${SELF}.pid"
 LOGFILE="$PREFIX/tmp/$(SELF).log"
 PWD_DIR="$PWD"
@@ -27,12 +27,12 @@ RUN_DIR="/"
 log() {
 	_LOG_TIME_STAMP="$(date +%c)"
 	touch "$LOGFILE"
-	echo "$_LOG_TIME_STAMP	$@" >> "$LOGFILE"
+	echo "$_LOG_TIME_STAMP	$*" >> "$LOGFILE"
 }
 
 # error function
 err() {
-	log "ERROR:	$@"
+	log "ERROR:	$*"
 }
 
 # fatal error function
@@ -43,7 +43,7 @@ die() {
 
 # main function
 main() {
-	# CODE HERE
+	true #no-op
 }
 
 
@@ -68,11 +68,11 @@ main() {
 ################################################################################
 
 # Change to safe running dir
-cd "$RUN_DIR"
+cd "$RUN_DIR" || die "Could not enter RUN_DIR"
 
 # Process PID file
 if [ -f "$PIDFILE" ] ; then
-	ps -p "$(cat $PIDFILE)" >/dev/null 2>&1 && die "PID is still running."
+	ps -p "$(cat "$PIDFILE")" >/dev/null 2>&1 && die "PID is still running."
 	rm "$PIDFILE"
 fi
 

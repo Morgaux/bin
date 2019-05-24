@@ -12,7 +12,7 @@
 hasX || exit 1
 
 # note: single quotes around -e argument to prevent envirmoment varaibles leaking
-scrot "$@" '%s.png' -e 'mv $f $$(xdg-user-dir PICTURES)/Screenshots/' || exit 2
+scrot "$*" '%s.png' -e 'mv $f $$(xdg-user-dir PICTURES)/Screenshots/' || exit 2
 
 log "Screenshot saved to $(xdg-user-dir PICTURES)/Screenshots/"
 

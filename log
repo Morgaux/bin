@@ -10,14 +10,14 @@ STAMP="$(date +%c)"
 PARENT="$(ps -o comm= $PPID)"
 
 log_mesg() {
-	MSG="$@"
+	MSG="$*"
 	[ -d "$HOME/var" ] || mkdir -p "$HOME/var"
 	[ ! "$MSG" = "" ] && echo "$STAMP : $PARENT : $MSG" >> ~/var/log
 }
 
 show_log() {
-	tail -n $1 ~/var/log 2>/dev/null && return 0
-	tail ~/var/log 2>/dev/null && return 0
+	tail -n "$1" ~/var/log 2>/dev/null && return 0
+	tail ~/var/log 2>/dev/null && return 1
 	err "log cannot be viewed"
 	exit 1
 }
@@ -46,10 +46,11 @@ usage() {
 while true; do
 	case $1 in
 		-*) case $1 in
-			"--show")	show_log; shift;;
+			"--show")	show_log "$2" && shift;
+					shift;;
 			"-h"|"--help")	usage;;
 			"--cut")	trim_log; shift;;
-			*)	err "unknown option: $1" || exit 1;;
+			*)		err "unknown option: $1" || exit 1;;
 		esac;;
 		*) break;;
 	esac
