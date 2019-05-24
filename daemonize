@@ -4,23 +4,87 @@
 # daemon template
 ##
 
-SELF="$(basename $0)"
-PIDFILE="$HOME/var/${SELF}.pid"
-CURENT_DIR="$PWD"
-PATH="$HOME/bin:$PATH"
 
+
+################################################################################
+#                              Configuration vars                              #
+################################################################################
+
+PREFIX="$HOME" # set to / if running with permissions
+SELF="$(basename $0)"
+PIDFILE="$PREFIX/tmp/${SELF}.pid"
+LOGFILE="$PREFIX/tmp/$(SELF).log"
+PWD_DIR="$PWD"
+RUN_DIR="/"
+
+
+
+################################################################################
+#                            Function definitions                              #
+################################################################################
+
+# log function
+log() {
+	_LOG_TIME_STAMP="$(date +%c)"
+	touch "$LOGFILE"
+	echo "$_LOG_TIME_STAMP	$@" >> "$LOGFILE"
+}
+
+# error function
+err() {
+	log "ERROR:	$@"
+}
+
+# fatal error function
+die() {
+	err "$@"
+	exit 1
+}
+
+# main function
+main() {
+	# CODE HERE
+}
+
+
+
+################################################################################
+#                                Init daemon                                   #
+################################################################################
+
+# Init logfile
+{
+	echo "Logfile for $SELF - $0"
+	echo "PIDFILE:	$PIDFILE"
+	echo "LOGFILE:	$LOGFILE"
+	echo "PWD_DIR:	$PWD_DIR"
+	echo "RUN_DIR:	$RUN_DIR"
+} > "$LOGFILE"
+
+
+
+################################################################################
+#                                  Run daemon                                  #
+################################################################################
+
+# Change to safe running dir
+cd "$RUN_DIR"
+
+# Process PID file
 if [ -f "$PIDFILE" ] ; then
-	ps -p "$(cat $PIDFILE)" >/dev/null 2>&1 && exit 1
+	ps -p "$(cat $PIDFILE)" >/dev/null 2>&1 && die "PID is still running."
 	rm "$PIDFILE"
 fi
 
-echo "$$" > "$PIDFILE" || exit 1
+# Create PID file
+echo "$$" > "$PIDFILE" || die "Could not create PID file"
 
-##
-# daemonizable code
-##
+# call main
+main "$@" ; log "main() {...} completed with exit code $?"
 
-rm "$PIDFILE" || exit 1
+# Remove PID file
+rm "$PIDFILE" || die "Could not remove PID file."
 
+# exit success
 exit 0
 
