@@ -29,9 +29,21 @@ trim_log() {
 	log "logfile cut"
 }
 
-flush() {
+flush_log() {
 	rm ~/var/log || err "Could not flush logfile" || exit 1
 	log_mesg "Log file flushed."
+}
+
+page_log() {
+	[ ! -z "$PAGER" ] || err "No PAGER found" || exit 1
+
+	if [ ! -z "$1" ] ; then
+		tail -n "$1" ~/var/log 2>/dev/null | "$PAGER"
+		return 0
+	else
+		"$PAGER" ~/var/log
+		return 1
+	fi
 }
 
 usage() {
@@ -40,7 +52,9 @@ usage() {
 	echo "options:"
 	echo "	-h	--help		show this message"
 	echo "	--show			show the last 10 logs"
-	echo "	--show LINES		show the last LINES logs"
+	echo "	--show LINES		show the last LINES of logs"
+	echo "	--page			show log in PAGER"
+	echo "	--page LINES		show last LINES of logs in PAGER"
 	echo "	--cut			cut log file 500 lines"
 	echo "	--flush			clear all lines from file"
 	exit 0
@@ -54,7 +68,8 @@ while true; do
 			"--show")	show_log "$2" && shift;		shift;;
 			"-h"|"--help")	usage;				shift;;
 			"--cut")	trim_log;			shift;;
-			"--flush")	flush;				shift;;
+			"--flush")	flush_log;			shift;;
+			"--page")	page_log "$2" && shift;		shift;;
 			*)		err "unknown option: $1" || exit 1;;
 		esac;;
 		*) break;;
