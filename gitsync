@@ -69,6 +69,7 @@ while [ "$#" -gt 0 ] ; do
 	LOCAL="$(git rev-parse HEAD)"
 	[ "$REMOTE" = "$LOCAL" ] && log "remote head and local match" && continue
 	git pull || err "could not complete pull"
+	log "$(git log --oneline -n 1)"
 	cd "$CURENT_DIR" || exit 1
 	log "exiting $REPO..."
 done
