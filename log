@@ -48,9 +48,9 @@ page_log() {
 
 usage() {
 	echo "log - log a message to ~/var/log"
-	echo "usage: log [ -h | --help ] [ --show ] [ MSG ]"
+	echo "usage: log [ OPTIONS ... ] [ MSG ]"
 	echo "options:"
-	echo "	-h	--help		show this message"
+	echo "	-h | --help		show this message"
 	echo "	--show			show the last 10 logs"
 	echo "	--show LINES		show the last LINES of logs"
 	echo "	--page			show log in PAGER"
