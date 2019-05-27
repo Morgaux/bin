@@ -5,11 +5,7 @@
 # is X/Xorg/X11 running?
 #
 
-if ! xset q >/dev/null 2>&1; then
-	log "X is not running"
-	exit 1
-fi
+xset q >/dev/null 2>&1
 
-log "X is running"
-exit 0
+exit $?
 
