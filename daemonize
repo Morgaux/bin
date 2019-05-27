@@ -13,7 +13,7 @@
 PREFIX="$HOME" # set to / if running with permissions
 SELF="$(basename "$0")"
 PIDFILE="$PREFIX/tmp/${SELF}.pid"
-LOGFILE="$PREFIX/tmp/$(SELF).log"
+LOGFILE="$PREFIX/tmp/${SELF}.log"
 PWD_DIR="$PWD"
 RUN_DIR="/"
 
