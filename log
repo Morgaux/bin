@@ -7,11 +7,17 @@
 
 STAMP="$(date +%c)"
 PARENT="$(ps -o comm= $PPID)"
+VERBOSE="FALSE"
 
 log_mesg() {
 	MSG="$*"
 	[ -d "$HOME/var" ] || mkdir -p "$HOME/var"
-	[ ! "$MSG" = "" ] && echo "$STAMP : $PARENT : $MSG" >> ~/var/log
+	[ ! "$MSG" = "" ] && if [ "$VERBOSE" = "FALSE" ]
+	then
+		echo "$STAMP : $PARENT : $MSG" >> ~/var/log
+	else
+		echo "$STAMP : $PARENT : $MSG" | tee -a ~/var/log
+	fi
 }
 
 show_log() {
@@ -51,6 +57,7 @@ usage() {
 	echo "usage: log [ OPTIONS ... ] [ MSG ]"
 	echo "options:"
 	echo "	-h | --help		show this message"
+	echo "	-v | --verbose		print and log the message"
 	echo "	--show			show the last 10 logs"
 	echo "	--show LINES		show the last LINES of logs"
 	echo "	--page			show log in PAGER"
@@ -67,6 +74,7 @@ while true; do
 		-*) case $1 in
 			"--show")	show_log "$2" && shift;		shift;;
 			"-h"|"--help")	usage;				shift;;
+			"-v"|"--verbose")	VERBOSE="TRUE";		shift;;
 			"--cut")	trim_log;			shift;;
 			"--flush")	flush_log;			shift;;
 			"--page")	page_log "$2" && shift;		shift;;
