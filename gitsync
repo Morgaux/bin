@@ -49,7 +49,16 @@ usage() {
 	exit 0
 }
 
-[ "$#" -gt 0 ] || { rm "$PIDFILE" ; $0 . ; exit $? ; }
+[ "$#" -gt 0 ] || {
+	log "Assuming curent dir as repo path."
+	log "Removing old PIDFILE"
+	rm "$PIDFILE" || err "Could not remove old PIDFILE" || exit 1
+	log "Running '$SELF ./'"
+	$0 . || err "Error occured in recursive call."
+	log "Completed with exit code $?"
+	log "Exiting."
+	exit 0
+}
 
 while [ "$#" -gt 0 ] ; do
 	cd "$CURENT_DIR" || exit 2
