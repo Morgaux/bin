@@ -49,7 +49,7 @@ usage() {
 	exit 0
 }
 
-[ "$#" -gt 0 ] || usage
+[ "$#" -gt 0 ] || { rm "$PIDFILE" ; $0 . ; exit $? ; }
 
 while [ "$#" -gt 0 ] ; do
 	cd "$CURENT_DIR" || exit 2
