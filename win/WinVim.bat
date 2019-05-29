@@ -1,5 +1,5 @@
 REM based on https://stackoverflow.com/questions/19497399/basic-text-editor-in-command-prompt
-REM as noted, he UI sucks but it has a soul
+REM as noted, the UI sucks but it has a soul
 
 @echo off
 title WinVim
