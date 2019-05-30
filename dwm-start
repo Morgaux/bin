@@ -1,0 +1,24 @@
+#!/bin/sh
+# https://gitlab.com/morgaux/etc
+
+##
+# dwm wrapper to launch dwm and set the status etc.
+##
+
+#symlink to /usr/local/bin/dwm-start:
+#ln -sf ~/bin/dwm-start /usr/local/bin/dwm-start
+
+#black bg
+xsetroot -solid black
+
+/home/morgaux/bin/dstatus &
+
+sleep 1
+
+/usr/bin/nm-applet &
+
+# set wallpaper
+feh -z -Z --bg-scale /home/morgaux/var/Pictures/Wallpapers/castle.png
+
+exec /usr/local/bin/dwm > /dev/null
+

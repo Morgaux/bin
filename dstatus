@@ -1,0 +1,168 @@
+#!/bin/sh
+
+##
+# Dynamic Status - set status for dwm and dvtm
+##
+
+
+
+################################################################################
+#                              Configuration vars                              #
+################################################################################
+
+PREFIX="$HOME" # set to / if running with permissions
+SELF="$(basename "$0")"
+PIDFILE="$PREFIX/tmp/${SELF}.pid"
+LOGFILE="$PREFIX/tmp/${SELF}.log"
+PWD_DIR="$PWD"
+RUN_DIR="/"
+DVTM_FIFO="/tmp/dvtm-status.fifo"
+STATUS_LINE=""
+FULL_STATUS="TRUE"
+
+
+
+################################################################################
+#                            Function definitions                              #
+################################################################################
+
+# log function
+log() {
+	_LOG_TIME_STAMP="$(date +%c)"
+	touch "$LOGFILE"
+	echo "$_LOG_TIME_STAMP	$*" >> "$LOGFILE"
+}
+
+# error function
+err() {
+	log "ERROR:	$*"
+	return 1
+}
+
+# fatal error function
+die() {
+	err "$*"
+	exit 1
+}
+
+# main function
+main() {
+	log "Initializing main($*)."
+
+	[ -x "$(command -v dwm)" ] || [ -x "$(command -v dvtm)" ] || {
+		log "No need for status as no programs will use it, exiting."
+		return 0
+	}
+
+	log "Entering main($*) loop."
+
+	# while loop to update status
+	while true
+	do
+
+		# reset status to a space
+		log "Clear old status line"
+		STATUS_LINE=" "
+
+		#time
+		STATUS_LINE=" [ $(date +'%a %b %d %R:%S') ]$STATUS_LINE"
+
+		#volume
+		if [ -x "$(command -v amixer)" ] && \
+			[ "$(amixer get Master | tail -1 | awk '{print $6}' | tr -d '[]')" = "on" ]
+		then 
+			# volume % with leading space for padding if <10%
+			VOL="$(printf "%3s" "$(amixer get Master | tail -1 | awk '{ print $5 }' | tr -d '[]')")"
+		else
+			# mute symbol
+			VOL="--%"
+		fi
+		STATUS_LINE=" [ Vol: $VOL ]$STATUS_LINE"
+
+		#battery
+		if [ -x "$(command -v acpi)" ]
+		then
+			PER="$(acpi | awk '{print $4}' | tr -d ',')"
+			BAT="$(acpi | awk '{print $3}' | tr -d ',')"
+			STATUS_LINE=" [ $PER - $BAT ]$STATUS_LINE"
+		fi
+
+		log "Status: $STATUS_LINE"
+
+		#put it in the xsetrootname
+		if [ -x "$(command -v xsetroot)" ] && [ -x "$(command -v dwm)" ]
+		then
+			log "Setting status line to xroot window."
+			xsetroot -name "$STATUS_LINE" || err "Could not update root window."
+		fi
+
+		#put in in the dvtm FIFO
+		if [ -x "$(command -v dvtm)" ]
+		then
+			log "Adding status line to FIFO."
+			#echo "$STATUS_LINE"
+		fi
+
+		sleep 1
+
+	done #> "$DVTM_FIFO" || err "Could not update FIFO."
+
+	return $? # unreachable
+}
+
+
+
+################################################################################
+#                                Init daemon                                   #
+################################################################################
+
+# Init logfile
+{
+	echo "Logfile for $SELF - $0"
+	echo "PIDFILE:	$PIDFILE"
+	echo "LOGFILE:	$LOGFILE"
+	echo "PWD_DIR:	$PWD_DIR"
+	echo "RUN_DIR:	$RUN_DIR"
+} > "$LOGFILE"
+
+# Init FIFO
+[ -p "$DVTM_FIFO" ] || mkfifo -m 600 "$DVTM_FIFO" || die "Cannot use FIFO"
+
+
+
+################################################################################
+#                                  Run daemon                                  #
+################################################################################
+
+# Change to safe running dir
+cd "$RUN_DIR" || die "Could not enter RUN_DIR"
+
+# Process PID file
+if [ -f "$PIDFILE" ]
+then
+	if ps -p "$(cat "$PIDFILE")" >/dev/null 2>&1
+	then
+		die "PID is still running."
+	else
+		log "PID file found but process not found."
+		rm "$PIDFILE"
+	fi
+fi
+
+# Create PID file
+echo "$$" > "$PIDFILE" || die "Could not create PID file"
+
+# call main
+log "exec main($*) {...}"
+main "$@"
+log "main($*) {...} completed with exit code $?"
+
+# Remove PID file
+rm "$PIDFILE" || die "Could not remove PID file."
+
+# Remove FIFO file
+rm "$DVTM_FIFO" || die "Could not remove the FIFO file."
+
+# exit success
+exit 0
+
