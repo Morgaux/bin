@@ -16,13 +16,13 @@ xsetroot -solid black
 sleep 1
 
 # networking
-/usr/bin/nm-applet &
+[ -x /usr/bin/nm-applet ] && /usr/bin/nm-applet &
 
 # transparency
-compton -b
+[ -x "$(command -v compton)" ] && compton -b
 
 # set wallpaper
-feh -z -Z --bg-scale /home/morgaux/var/Pictures/Wallpapers/Boy4aow.png
+[ -x "$(command -v feh)" ] && feh -z -Z --bg-scale /home/morgaux/var/Pictures/Wallpapers/Boy4aow.png
 
-exec /usr/local/bin/dwm > /dev/null
+[ -x "$(command -v dwm)" ] && exec /usr/local/bin/dwm > /dev/null
 
