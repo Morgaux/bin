@@ -18,7 +18,6 @@ PWD_DIR="$PWD"
 RUN_DIR="/"
 DVTM_FIFO="/tmp/dvtm-status.fifo"
 STATUS_LINE=""
-FULL_STATUS="TRUE"
 
 
 
@@ -70,7 +69,7 @@ main() {
 		#volume
 		if [ -x "$(command -v amixer)" ] && \
 			[ "$(amixer get Master | tail -1 | awk '{print $6}' | tr -d '[]')" = "on" ]
-		then 
+		then
 			# volume % with leading space for padding if <10%
 			VOL="$(printf "%3s" "$(amixer get Master | tail -1 | awk '{ print $5 }' | tr -d '[]')")"
 		else
@@ -79,12 +78,18 @@ main() {
 		fi
 		STATUS_LINE=" [ Vol: $VOL ]$STATUS_LINE"
 
+		# network strength
+		if [ -f /proc/net/wireless ]
+		then
+			STATUS_LINE=" [ Net: $(tail -1 /proc/net/wireless | awk '{print $3}' | tr -d '.')% ]$STATUS_LINE"
+		fi
+
 		#battery
 		if [ -x "$(command -v acpi)" ]
 		then
 			PER="$(acpi | awk '{print $4}' | tr -d ',')"
 			BAT="$(acpi | awk '{print $3}' | tr -d ',')"
-			STATUS_LINE=" [ $PER - $BAT ]$STATUS_LINE"
+			STATUS_LINE=" [ Bat: $PER ]$STATUS_LINE"
 		fi
 
 		log "Status: $STATUS_LINE"
