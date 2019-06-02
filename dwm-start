@@ -24,5 +24,5 @@ sleep 1
 # set wallpaper
 [ -x "$(command -v feh)" ] && feh -z -Z --bg-scale /home/morgaux/var/Pictures/Wallpapers/Boy4aow.png
 
-[ -x "$(command -v dwm)" ] && exec /usr/local/bin/dwm > /dev/null
+[ -x "$(command -v dwm)" ] && exec /usr/local/bin/dwm > /home/morgaux/tmp/dwm.log
 
