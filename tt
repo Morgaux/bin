@@ -9,10 +9,12 @@ hasX || err "no X running..." || exit 1
 
 [ -x "$(command -v st)" ] || err "suckless terminal not found" || exit 1
 [ -x "$(command -v tabbed)" ] || err "tabbed not found" || exit 1
+[ -x "$(command -v hacksaw)" ] || PATH="$PATH:$HOME/.cargo/bin"
+[ -x "$(command -v hacksaw)" ] || err "hacksaw not found" || exit 1
 
 log "opening tabbed terminal..."
 
-tabbed -c -k -r 2 st -w '' -t 'tabbed terminal' "$@"
+tabbed -c -k -r 2 st -w '' -t 'floating-st' "$@"
 
 log "tabbed terminal closed with exit code $?"
 
