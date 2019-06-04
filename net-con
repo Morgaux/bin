@@ -1,0 +1,8 @@
+#!/bin/sh
+
+#  WIP shortcut to network selector
+# TODO:
+# make portabe by directly allowing WiFi networks to be selected and logged into
+
+nm-applet
+
