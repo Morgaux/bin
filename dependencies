@@ -1,0 +1,10 @@
+#!/bin/sh
+#https://gitlab.com/morgaux/bin
+
+[ "$#" -gt 0 ] && for CMD in "$@"
+do
+	[ -x "$(command -v $CMD)" ] || exit 1
+done
+
+exit 0
+
