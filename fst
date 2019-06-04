@@ -10,7 +10,9 @@ hasX || erro "no display found..." || exit 1
 
 [ -x "$(command -v st)" ] || err "st not found" || exit 1
 [ -x "$(command -v tabbed)" ] || err "tabbed not found" || exit 1
-[ -x "$(command -v hacksaw)" ] && GEOMETRY=$(hacksaw -n) || err "hacksaw not found" || exit 1
+[ -x "$(command -v hacksaw)" ] || err "hacksaw not found" || exit 1
+
+GEOMETRY=$(hacksaw -n) 
 
 if [ -z "$GEOMETRY" ]
 then
