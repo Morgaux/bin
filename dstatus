@@ -88,7 +88,7 @@ main() {
 		if [ -x "$(command -v acpi)" ]
 		then
 			PER="$(acpi | awk '{print $4}' | tr -d ',')"
-			BAT="$(acpi | awk '{print $3}' | tr -d ',')"
+			#BAT="$(acpi | awk '{print $3}' | tr -d ',')"
 			STATUS_LINE=" [ Bat: $PER ]$STATUS_LINE"
 		fi
 
