@@ -6,10 +6,16 @@
 #
 
 SEARCH_URL="http://duckduckgo.com/?q="
-BROWSER="w3m"
+BROWSER_CMD="w3m"
+BROWSER_FLAGS="-o meta_refresh=1"
 dependencies slmenu $BROWSER || exit 1
 
-QUERRY="$(echo | slmenu -i -l 5 -p 'search:')"
+if [ "$#" -gt 0 ]
+then
+	QUERRY="$(echo $* | sed 's/ /%20/g')"
+else
+	QUERRY="$(echo | slmenu -i -l 5 -p 'search:' | sed 's/ /%20/g')"
+fi
 
-$BROWSER ${SEARCH_URL}${QUERRY}
+$BROWSER_CMD $BROWSER_FLAGS ${SEARCH_URL}${QUERRY}
 
