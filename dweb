@@ -1,0 +1,15 @@
+#!/bin/sh
+#http://gitlab.com/morgaux/bin
+
+#
+# slmenu based browser search
+#
+
+SEARCH_URL="http://duckduckgo.com/?q="
+BROWSER="w3m"
+dependencies slmenu $BROWSER || exit 1
+
+QUERRY="$(echo | slmenu -i -l 5 -p 'search:')"
+
+$BROWSER ${SEARCH_URL}${QUERRY}
+
