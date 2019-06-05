@@ -5,7 +5,8 @@
 # slmenu based man page searcher
 #
 
-[ -x "$(command -v slmenu)" ] || err "slmenu not installed" || exit 1
+#[ -x "$(command -v slmenu)" ] || err "slmenu not installed" || exit 1
+dependencies slmenu || exit 1
 
 SEARCH="."
 
