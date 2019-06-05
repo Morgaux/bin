@@ -4,6 +4,8 @@
 # sync local git repo
 ##
 
+dependencies git log err || exit 1
+
 SELF="$(basename "$0")"
 PIDFILE="$HOME/var/${SELF}.pid"
 CURENT_DIR="$PWD"
