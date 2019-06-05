@@ -5,6 +5,8 @@
 # git workflow functions
 #
 
+dependencies git || exit 1
+
 git_check()
 {
 	[ -x "$(command -v git)" ] || err "git not found, please install" || return 1
