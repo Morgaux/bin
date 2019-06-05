@@ -5,14 +5,15 @@
 # save a Screen Shot
 #
 
-[ -x "$(command -v scrot)" ] || err "scrot not found" || exit 1
-[ -x "$(command -v xdg-user-dir)" ] || err "xdg-user-dir not found" || exit 1
-[ -d "$(xdg-user-dir PICTURES)/Screenshots" ] && mkdir -p "$(xdg-user-dir PICTURES)/Screenshots"
-
 hasX || exit 1
 
-# note: single quotes around -e argument to prevent envirmoment varaibles leaking
-scrot "$*" '%s.png' -e 'mv $f $$(xdg-user-dir PICTURES)/Screenshots/' || exit 2
+dependencies scrot xdg-user-dir || exit 1
 
-log "Screenshot saved to $(xdg-user-dir PICTURES)/Screenshots/"
+SAVE_DIR="$(xdg-user-dir PICTURES)/Screenshots/"
+
+[ -d "$SAVE_DIR" ] || mkdir -p "$SAVE_DIR"
+
+scrot "$*" '%s.png' -e "$(echo "mv \$f $SAVE_DIR")" || exit 2
+
+log "Screenshot saved to $SAVE_DIR"
 
