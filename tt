@@ -7,10 +7,8 @@
 
 hasX || err "no X running..." || exit 1
 
-[ -x "$(command -v st)" ] || err "suckless terminal not found" || exit 1
+[ -x "$(command -v st)" ] || err "simple terminal not found" || exit 1
 [ -x "$(command -v tabbed)" ] || err "tabbed not found" || exit 1
-[ -x "$(command -v hacksaw)" ] || PATH="$PATH:$HOME/.cargo/bin"
-[ -x "$(command -v hacksaw)" ] || err "hacksaw not found" || exit 1
 
 log "opening tabbed terminal..."
 

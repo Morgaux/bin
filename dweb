@@ -1,0 +1,21 @@
+#!/bin/sh
+#http://gitlab.com/morgaux/bin
+
+#
+# slmenu based browser search
+#
+
+SEARCH_URL="http://duckduckgo.com/?q="
+BROWSER_CMD="w3m"
+BROWSER_FLAGS="-o meta_refresh=1"
+dependencies slmenu $BROWSER || exit 1
+
+if [ "$#" -gt 0 ]
+then
+	QUERRY="$(echo $* | sed 's/ /%20/g')"
+else
+	QUERRY="$(echo | slmenu -i -l 5 -p 'search:' | sed 's/ /%20/g')"
+fi
+
+$BROWSER_CMD $BROWSER_FLAGS ${SEARCH_URL}${QUERRY}
+
