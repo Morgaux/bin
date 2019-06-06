@@ -19,7 +19,7 @@ sleep 1
 [ -x /usr/bin/nm-applet ] && /usr/bin/nm-applet &
 
 # transparency
-[ -x "$(command -v compton)" ] && compton -b
+[ -x "$(command -v compton)" ] && compton -b -c
 
 # set wallpaper
 [ -x "$(command -v feh)" ] && feh -z -Z --bg-scale /home/morgaux/var/Pictures/Wallpapers/Boy4aow.png

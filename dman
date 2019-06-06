@@ -14,7 +14,7 @@ SEARCH="."
 
 log "Searching for $SEARCH man page..."
 
-MAN_PAGE="$(man -k "$SEARCH" | awk '{print $1}' | slmenu -i -l 5 -p 'dman:')"
+MAN_PAGE="$(man -k "$SEARCH" | awk '{print $1}' | slmenu -i -l 15 -p 'dman:')"
 
 log "$MAN_PAGE man page selected"
 
