@@ -17,6 +17,8 @@ LOGFILE="$PREFIX/tmp/${SELF}.log"
 PWD_DIR="$PWD"
 RUN_DIR="/"
 STATUS_LINE=""
+PING_IP="8.8.8.8"
+PING_DEADLINE="5" # seconds until ping gives up and says nope, im offline
 
 
 
@@ -43,6 +45,89 @@ die() {
 	exit 1
 }
 
+clock_status() {
+	STATUS_LINE=" [ $(date +'%a %b %d %R:%S') ]$STATUS_LINE"
+}
+
+audio_status() {
+	if [ -x "$(command -v amixer)" ] && \
+		[ "$(amixer get Master | tail -1 | awk '{print $6}' | tr -d '[]')" = "on" ]
+	then
+		# volume % with leading space for padding if <10%
+		_TMP_VOL="$(amixer get Master | tail -1 | awk '{ print $5 }' | tr -d '[]')"
+		VOL="$(printf "%3s" "$_TMP_VOL")"
+	else
+		# mute symbol
+		VOL="--%"
+	fi
+	STATUS_LINE=" [ Vol: $VOL ]$STATUS_LINE"
+}
+
+net_status() {
+	# offline symbol, default value
+	_TMP_NET="..."
+
+	if [ "$NET_UP_STATUS" = "TRUE" ] && [ -f /proc/net/wireless ]
+	then
+		_TMP_NET="$(tail -1 /proc/net/wireless | awk '{print $3}' | tr -d '.')%"
+	fi
+	STATUS_LINE=" [ Net: ${_TMP_NET} ]$STATUS_LINE"
+}
+
+battery_status() {
+	if [ -x "$(command -v acpi)" ]
+	then
+		# battery percentage
+		PER="$(acpi | awk '{print $4}' | tr -d ',')"
+		# Charging/Discharging state
+		#BAT="$(acpi | awk '{print $3}' | tr -d ',')"
+		STATUS_LINE=" [ Bat: $PER ]$STATUS_LINE"
+	fi
+}
+
+update_status_10_times() {
+	for i in 0 1 2 3 4 5 6 7 8 9
+	do
+
+		: $i # no op to validate the unused $i variable
+
+		# reset status to a space
+		STATUS_LINE=" "
+
+		clock_status # date and time
+		audio_status # volume
+		net_status # network strength
+		battery_status # battery
+
+		#put it in the xsetrootname
+		if [ -x "$(command -v xsetroot)" ] && [ -x "$(command -v dwm)" ]
+		then
+			log "Setting status line to xroot window."
+			xsetroot -name "$STATUS_LINE" || err "Could not update root window."
+		fi
+
+		sleep 1
+
+	done
+}
+
+is_net_conected() {
+	# predicate function, exit code 0 = true, else false
+	[ -v "$(command -v ping)" ] || err "ping is not installed, are you crazy?" || return 1
+	ping -c 1 -w "$PING_DEADLINE" "$PING_IP" >/dev/null 2>&1 && return 0
+	err "could not reach $PING_IP, system offline"
+	return 1
+}
+
+check_network() {
+	if is_net_connected
+	then
+		NET_UP_STATUS="TRUE"
+	else
+		NET_UP_STATUS="FALSE"
+	fi
+}
+
 # main function
 main() {
 	log "Initializing main($*)."
@@ -54,51 +139,18 @@ main() {
 
 	log "Entering main($*) loop."
 
+	check_network &
+
 	# while loop to update status
 	while true
 	do
 
-		# reset status to a space
-		log "Clear old status line"
-		STATUS_LINE=" "
+		update_status_10_times # allow 10 seconds for other background tasks
 
-		#time
-		STATUS_LINE=" [ $(date +'%a %b %d %R:%S') ]$STATUS_LINE"
-
-		#volume
-		if [ -x "$(command -v amixer)" ] && \
-			[ "$(amixer get Master | tail -1 | awk '{print $6}' | tr -d '[]')" = "on" ]
-		then
-			# volume % with leading space for padding if <10%
-			VOL="$(printf "%3s" "$(amixer get Master | tail -1 | awk '{ print $5 }' | tr -d '[]')")"
-		else
-			# mute symbol
-			VOL="--%"
-		fi
-		STATUS_LINE=" [ Vol: $VOL ]$STATUS_LINE"
-
-		# network strength
-		if [ -f /proc/net/wireless ]
-		then
-			STATUS_LINE=" [ Net: $(tail -1 /proc/net/wireless | awk '{print $3}' | tr -d '.')% ]$STATUS_LINE"
-		fi
-
-		#battery
-		if [ -x "$(command -v acpi)" ]
-		then
-			PER="$(acpi | awk '{print $4}' | tr -d ',')"
-			#BAT="$(acpi | awk '{print $3}' | tr -d ',')"
-			STATUS_LINE=" [ Bat: $PER ]$STATUS_LINE"
-		fi
+		# check if there is a network conection
+		check_network &
 
 		log "Status: $STATUS_LINE"
-
-		#put it in the xsetrootname
-		if [ -x "$(command -v xsetroot)" ] && [ -x "$(command -v dwm)" ]
-		then
-			log "Setting status line to xroot window."
-			xsetroot -name "$STATUS_LINE" || err "Could not update root window."
-		fi
 
 		sleep 1
 
