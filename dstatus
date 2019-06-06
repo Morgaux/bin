@@ -16,7 +16,6 @@ PIDFILE="$PREFIX/tmp/${SELF}.pid"
 LOGFILE="$PREFIX/tmp/${SELF}.log"
 PWD_DIR="$PWD"
 RUN_DIR="/"
-DVTM_FIFO="/tmp/dvtm-status.fifo"
 STATUS_LINE=""
 
 
@@ -48,7 +47,7 @@ die() {
 main() {
 	log "Initializing main($*)."
 
-	[ -x "$(command -v dwm)" ] || [ -x "$(command -v dvtm)" ] || {
+	[ -x "$(command -v dwm)" ] || {
 		log "No need for status as no programs will use it, exiting."
 		return 0
 	}
@@ -101,16 +100,9 @@ main() {
 			xsetroot -name "$STATUS_LINE" || err "Could not update root window."
 		fi
 
-		#put in in the dvtm FIFO
-		if [ -x "$(command -v dvtm)" ]
-		then
-			log "Adding status line to FIFO."
-			#echo "$STATUS_LINE"
-		fi
-
 		sleep 1
 
-	done #> "$DVTM_FIFO" || err "Could not update FIFO."
+	done
 
 	return $? # unreachable
 }
@@ -129,9 +121,6 @@ main() {
 	echo "PWD_DIR:	$PWD_DIR"
 	echo "RUN_DIR:	$RUN_DIR"
 } > "$LOGFILE"
-
-# Init FIFO
-[ -p "$DVTM_FIFO" ] || mkfifo -m 600 "$DVTM_FIFO" || die "Cannot use FIFO"
 
 
 
@@ -164,9 +153,6 @@ log "main($*) {...} completed with exit code $?"
 
 # Remove PID file
 rm "$PIDFILE" || die "Could not remove PID file."
-
-# Remove FIFO file
-rm "$DVTM_FIFO" || die "Could not remove the FIFO file."
 
 # exit success
 exit 0
