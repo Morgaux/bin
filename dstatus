@@ -17,6 +17,8 @@ LOGFILE="$PREFIX/tmp/${SELF}.log"
 PWD_DIR="$PWD"
 RUN_DIR="/"
 STATUS_LINE=""
+STATUS_DELAY="0.1"
+NET_UP_FILE="$PREFIX/tmp/${SELF}.net"
 PING_IP="8.8.8.8"
 PING_DEADLINE="5" # seconds until ping gives up and says nope, im offline
 
@@ -65,13 +67,15 @@ audio_status() {
 
 net_status() {
 	# offline symbol, default value
-	_TMP_NET="..."
+	_NET_OFF="..."
 
-	if [ "$NET_UP_STATUS" = "TRUE" ] && [ -f /proc/net/wireless ]
+	if [ -f /proc/net/wireless ] && [ "$(cat "$NET_UP_FILE")" = "TRUE" ]
 	then
 		_TMP_NET="$(tail -1 /proc/net/wireless | awk '{print $3}' | tr -d '.')%"
+		STATUS_LINE=" [ Net: ${_TMP_NET} ]$STATUS_LINE"
+	else
+		STATUS_LINE=" [ Net: ${_NET_OFF} ]$STATUS_LINE"
 	fi
-	STATUS_LINE=" [ Net: ${_TMP_NET} ]$STATUS_LINE"
 }
 
 battery_status() {
@@ -85,47 +89,59 @@ battery_status() {
 	fi
 }
 
+update_status() {
+	# reset status to a space
+	STATUS_LINE=" "
+
+	clock_status # date and time
+	audio_status # volume
+	net_status # network strength
+	battery_status # battery
+
+	#put it in the xsetrootname
+	if [ -x "$(command -v xsetroot)" ] && [ -x "$(command -v dwm)" ]
+	then
+		xsetroot -name "$STATUS_LINE" || err "Could not update root window."
+	fi
+
+	sleep "$STATUS_DELAY"
+}
+
 update_status_10_times() {
 	for i in 0 1 2 3 4 5 6 7 8 9
 	do
-
 		: $i # no op to validate the unused $i variable
-
-		# reset status to a space
-		STATUS_LINE=" "
-
-		clock_status # date and time
-		audio_status # volume
-		net_status # network strength
-		battery_status # battery
-
-		#put it in the xsetrootname
-		if [ -x "$(command -v xsetroot)" ] && [ -x "$(command -v dwm)" ]
-		then
-			log "Setting status line to xroot window."
-			xsetroot -name "$STATUS_LINE" || err "Could not update root window."
-		fi
-
-		sleep 1
-
+		update_status
 	done
 }
 
-is_net_conected() {
+update_status_100_times() {
+	for i in 0 1 2 3 4 5 6 7 8 9
+	do
+		: $i # no op to validate the unused $i variable
+		update_status_10_times
+	done
+}
+
+is_net_connected() {
 	# predicate function, exit code 0 = true, else false
-	[ -v "$(command -v ping)" ] || err "ping is not installed, are you crazy?" || return 1
+	[ -x "$(command -v ping)" ] || err "ping is not installed, are you crazy?" || return 1
 	ping -c 1 -w "$PING_DEADLINE" "$PING_IP" >/dev/null 2>&1 && return 0
 	err "could not reach $PING_IP, system offline"
 	return 1
 }
 
 check_network() {
+	NET_UP_STATUS="FALSE"
+
 	if is_net_connected
 	then
 		NET_UP_STATUS="TRUE"
-	else
-		NET_UP_STATUS="FALSE"
 	fi
+
+	echo $NET_UP_STATUS > "$NET_UP_FILE"
+
+	log "Network is up: $NET_UP_STATUS"
 }
 
 # main function
@@ -145,14 +161,12 @@ main() {
 	while true
 	do
 
-		update_status_10_times # allow 10 seconds for other background tasks
+		update_status_100_times # allow 10 seconds for other background tasks
 
 		# check if there is a network conection
 		check_network &
 
-		log "Status: $STATUS_LINE"
-
-		sleep 1
+		#sleep 1
 
 	done
 
@@ -200,7 +214,7 @@ echo "$$" > "$PIDFILE" || die "Could not create PID file"
 
 # call main
 log "exec main($*) {...}"
-main "$@"
+main "$@" >> "$LOGFILE"
 log "main($*) {...} completed with exit code $?"
 
 # Remove PID file
