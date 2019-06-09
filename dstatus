@@ -60,14 +60,14 @@ audio_status() {
 		VOL="$(printf "%3s" "$_TMP_VOL")"
 	else
 		# mute symbol
-		VOL="--%"
+		VOL="OFF"
 	fi
 	STATUS_LINE=" [ Vol: $VOL ]$STATUS_LINE"
 }
 
 net_status() {
 	# offline symbol, default value
-	_NET_OFF="..."
+	_NET_OFF="OFF"
 
 	if [ -f /proc/net/wireless ] && [ "$(cat "$NET_UP_FILE")" = "TRUE" ]
 	then
