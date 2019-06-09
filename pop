@@ -1,0 +1,15 @@
+#!/bin/sh
+#https://gitlab.com/morgaux/bin
+
+#
+# Launch popcorn time
+#
+
+POP_PATH="$HOME/tmp/Popcorn-Time-0.3.10-Linux-64"
+POP_EXEC="Popcorn-Time"
+
+[ -d "$POP_PATH" ] || err "POP_PATH does not exist" || exit 1
+[ -f "${POP_PATH}/${POP_EXEC}" ] || err "Not executable found" || exit 1
+
+exec "${POP_PATH}/${POP_EXEC}"
+
