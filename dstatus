@@ -10,15 +10,17 @@
 #                              Configuration vars                              #
 ################################################################################
 
-PREFIX="$HOME" # set to / if running with permissions
+PREFIX="" # "" means / set to $HOME for local files
 SELF="$(basename "$0")"
-PIDFILE="$PREFIX/tmp/${SELF}.pid"
-LOGFILE="$PREFIX/tmp/${SELF}.log"
+SRC_DIR="$(dirname "$0")"
+TMP_DIR="$PREFIX/tmp"
+PIDFILE="${TMP_DIR}/${SELF}.pid"
+LOGFILE="${TMP_DIR}/${SELF}.log"
 PWD_DIR="$PWD"
 RUN_DIR="/"
 STATUS_LINE=""
 STATUS_DELAY="0.1"
-NET_UP_FILE="$PREFIX/tmp/${SELF}.net"
+NET_UP_FILE="${TMP_DIR}/${SELF}.net"
 PING_IP="8.8.8.8"
 PING_DEADLINE="5" # seconds until ping gives up and says nope, im offline
 
@@ -93,10 +95,10 @@ update_status() {
 	# reset status to a space
 	STATUS_LINE=" "
 
-	clock_status # date and time
-	audio_status # volume
-	net_status # network strength
-	battery_status # battery
+	clock_status	# date and time
+	audio_status	# volume
+	net_status	# network strength
+	battery_status	# battery
 
 	#put it in the xsetrootname
 	if [ -x "$(command -v xsetroot)" ] && [ -x "$(command -v dwm)" ]
@@ -155,7 +157,7 @@ main() {
 
 	log "Entering main($*) loop."
 
-	check_network &
+	check_network & # check network before loop
 
 	# while loop to update status
 	while true
@@ -170,7 +172,9 @@ main() {
 
 	done
 
-	return $? # unreachable
+	# unreachable
+	err "Unreachable section reached, loop exited $?"
+	return 1
 }
 
 
@@ -187,6 +191,9 @@ main() {
 	echo "PWD_DIR:	$PWD_DIR"
 	echo "RUN_DIR:	$RUN_DIR"
 } > "$LOGFILE"
+
+# Init dirs
+mkdir -p "$TMP_DIR"
 
 
 
