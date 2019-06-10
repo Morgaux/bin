@@ -58,12 +58,14 @@
 #                              Configuration vars                              #
 ################################################################################
 
-PREFIX="$HOME" # set to / if running with permissions
+PREFIX="" # leave blank to to default to "/"
 SELF="$(basename "$0")"
-PIDFILE="$PREFIX/tmp/${SELF}.pid"
-LOGFILE="$PREFIX/tmp/${SELF}.log"
+SRC_DIR="$(dirname "$0")"
 PWD_DIR="$PWD"
 RUN_DIR="/"
+TMP_DIR="$PREFIX/tmp"
+PIDFILE="${TMP_DIR}/${SELF}.pid"
+LOGFILE="${TMP_DIR}/${SELF}.log"
 
 
 
@@ -109,6 +111,12 @@ main() {
 	echo "PWD_DIR:	$PWD_DIR"
 	echo "RUN_DIR:	$RUN_DIR"
 } > "$LOGFILE"
+
+# Init dirs
+for dir in SRC_DIR PWD_DIR RUN_DIR TMP_DIR
+do
+	mkdir -p "$dir" # enure dirs exist
+done
 
 
 
