@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ##
-# Dynamic Status - set status for dwm and dvtm
+# Dynamic Status - set status for dwm
 ##
 
 
@@ -54,8 +54,9 @@ clock_status() {
 }
 
 audio_status() {
-	if [ -x "$(command -v amixer)" ] && \
-		[ "$(amixer get Master | tail -1 | awk '{print $6}' | tr -d '[]')" = "on" ]
+	[ -x "$(command -v amixer)" ] || return 0
+
+	if [ "$(amixer get Master | tail -1 | awk '{print $6}' | tr -d '[]')" = "on" ]
 	then
 		# volume % with leading space for padding if <10%
 		_TMP_VOL="$(amixer get Master | tail -1 | awk '{ print $5 }' | tr -d '[]')"
@@ -104,22 +105,6 @@ update_status() {
 	sleep "$STATUS_DELAY"
 }
 
-update_status_10_times() {
-	for i in 0 1 2 3 4 5 6 7 8 9
-	do
-		: $i # no op to validate the unused $i variable
-		update_status
-	done
-}
-
-update_status_100_times() {
-	for i in 0 1 2 3 4 5 6 7 8 9
-	do
-		: $i # no op to validate the unused $i variable
-		update_status_10_times
-	done
-}
-
 is_net_connected() {
 	# predicate function, exit code 0 = true, else false
 	[ -x "$(command -v ping)" ] || err "ping is not installed, are you crazy?" || return 1
@@ -129,37 +114,37 @@ is_net_connected() {
 }
 
 check_network() {
-	NET_UP_STATUS="FALSE"
+	while true
+	do
+		NET_UP_STATUS="FALSE"
 
-	if is_net_connected
-	then
-		NET_UP_STATUS="TRUE"
-	fi
+		if is_net_connected
+		then
+			NET_UP_STATUS="TRUE"
+		fi
 
-	echo $NET_UP_STATUS > "$NET_UP_FILE"
+		echo $NET_UP_STATUS > "$NET_UP_FILE"
 
-	log "Network is up: $NET_UP_STATUS"
+		log "Network is up: $NET_UP_STATUS"
+
+		sleep 120 # 2 minutes
+	done
 }
 
 # main function
 main() {
 	log "Initializing main($*)."
-
 	[ -x "$(command -v dwm)" ] || {
 		log "No need for status as no programs will use it, exiting."
 		return 0
 	}
 
+	check_network & # check network in the background
+
 	log "Entering main($*) loop."
-
-	check_network & # check network before loop
-
 	while true
 	do
-
-		update_status_100_times # allow 10 seconds for network check
-		check_network &
-
+		update_status
 	done
 
 	# unreachable
@@ -211,11 +196,11 @@ echo "$$" > "$PIDFILE" || die "Could not create PID file"
 
 # call main
 log "exec main($*) {...}"
-main "$@" >> "$LOGFILE"
+main "$@" >> "$LOGFILE" 2>&1
 log "main($*) {...} completed with exit code $?"
 
 # Remove PID file
-rm "$PIDFILE" || die "Could not remove PID file."
+rm -f "$PIDFILE" || die "Could not remove PID file."
 
 # exit success
 exit 0
