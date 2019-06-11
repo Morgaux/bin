@@ -68,15 +68,10 @@ audio_status() {
 }
 
 net_status() {
-	# offline symbol, default value
-	_NET_OFF="OFF"
-
 	if [ -f /proc/net/wireless ] && [ "$(cat "$NET_UP_FILE")" = "TRUE" ]
 	then
 		_TMP_NET="$(tail -1 /proc/net/wireless | awk '{print $3}' | tr -d '.')%"
 		STATUS_LINE=" [ Net: ${_TMP_NET} ]$STATUS_LINE"
-	else
-		STATUS_LINE=" [ Net: ${_NET_OFF} ]$STATUS_LINE"
 	fi
 }
 
