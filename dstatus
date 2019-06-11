@@ -154,16 +154,11 @@ main() {
 
 	check_network & # check network before loop
 
-	# while loop to update status
 	while true
 	do
 
-		update_status_100_times # allow 10 seconds for other background tasks
-
-		# check if there is a network conection
+		update_status_100_times # allow 10 seconds for network check
 		check_network &
-
-		#sleep 1
 
 	done
 
