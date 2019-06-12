@@ -5,24 +5,59 @@
 # Execute apropriate ufetch, depends on ufetch-* in PATH
 #
 
-OSLST="alpine arch debian fedora manjaro mint mxlinux raspbian ubuntu void"
+OSLIST="alpine \
+	arch \
+	centos \
+	crux \
+	debian \
+	fedora \
+	freebsd \
+	gentoo \
+	linux \
+	linuxlite \
+	macos \
+	manjaro \
+	mint \
+	mx \
+	netbsd \
+	openbsd \
+	raspbian \
+	suse \
+	ubuntu \
+	void"
 
-# Linux
-for i in $(echo "$OSLST" | tr " " "\n"); do
-	if grep -q -i "$i" /etc/*release*; then
-		ufetch-"$i" 2> /dev/null || continue
+UFDIR=""
+
+for OS in $(echo "$OSLIST" | tr -d '\t' | tr ' ' '\n')
+do
+	if [ -x "$(command -v "ufetch-$OS")" ]
+	then
+		UFDIR="$(dirname "$(which "ufetch-$OS")")"
+		break
+	fi
+done
+
+if [ -z "$UFDIR" ]
+then
+	err "no ufetch found"
+	exit 1
+fi
+
+for UF in $(echo "${UFDIR}/ufetch-"* | tr ' -' '\n ' | grep -v png | awk '{print $2}')
+do
+	if grep -q -i "$UF" /etc/*release* >/dev/null 2>&1
+	then
+		"ufetch-$UF" 2>/dev/null
+		exit $?
+	fi
+
+	if uname -a | grep -q -i "$UF"
+	then
+		"ufetch-$UF" 2>/dev/null
 		exit $?
 	fi
 done
 
-# Unix
-for i in freebsd openbsd linux ; do
-	if uname -a | grep -q -i $i ; then
-		ufetch-$i 2> /dev/null || continue
-		exit $?
-	fi
-done
-
-err "ufetch not found"
+err "no ufetch selected"
 exit 1
 
