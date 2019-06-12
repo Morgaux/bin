@@ -24,6 +24,5 @@ for i in freebsd openbsd linux ; do
 done
 
 err "ufetch not found"
-
 exit 1
 
