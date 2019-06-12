@@ -2,7 +2,7 @@
 #https://gitlab.com/morgaux/bin
 
 EXIT_STATUS=0
-PARENT="$(basename $(echo $(cat /proc/$PPID/cmdline)))"
+PARENT="$(basename $(cat /proc/$PPID/cmdline 2>/dev/null))"
 
 [ "$#" -gt 0 ] && for CMD in "$@"
 do
