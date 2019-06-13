@@ -2,46 +2,10 @@
 #http://gitlab.com/morgaux/bin
 
 #
-# Execute apropriate ufetch, depends on ufetch-* in PATH
+# Execute apropriate ufetch, depends on ufetch-* in ~/src/ufetch
 #
 
-OSLIST="alpine \
-	arch \
-	centos \
-	crux \
-	debian \
-	fedora \
-	freebsd \
-	gentoo \
-	linux \
-	linuxlite \
-	macos \
-	manjaro \
-	mint \
-	mx \
-	netbsd \
-	openbsd \
-	raspbian \
-	suse \
-	ubuntu \
-	void"
-
-UFDIR=""
-
-for OS in $(echo "$OSLIST" | tr -d '\t' | tr ' ' '\n')
-do
-	if [ -x "$(command -v "ufetch-$OS")" ]
-	then
-		UFDIR="$(dirname "$(which "ufetch-$OS")")"
-		break
-	fi
-done
-
-if [ -z "$UFDIR" ]
-then
-	err "no ufetch found"
-	exit 1
-fi
+UFDIR="$HOME/src/ufetch"
 
 for UF in $(echo "${UFDIR}/ufetch-"* | tr ' -' '\n ' | grep -v png | awk '{print $2}')
 do
