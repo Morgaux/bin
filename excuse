@@ -1,8 +1,14 @@
 #!/bin/sh
 
+#
+# Get an excuse for an error message
+#
+
 URL="http://developerexcuses.com"
 
 dependencies w3m || exit 1
 
-w3m -dump "$URL" 2>/dev/null | grep -v Copyright | tr -s '\n ' | cut -c 2-
+{
+	w3m -dump "$URL" 2>/dev/null || exit 1
+} | grep -v Copyright | tr -s '\n ' | cut -c 2-
 
