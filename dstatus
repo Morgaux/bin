@@ -72,7 +72,7 @@ net_status() {
 	if [ -f /proc/net/wireless ] && [ "$(cat "$NET_UP_FILE")" = "TRUE" ]
 	then
 		_TMP_NET="$(tail -1 /proc/net/wireless | awk '{print $3}' | tr -d '.')%"
-		STATUS_LINE=" [ Net: ${_TMP_NET} ]$STATUS_LINE"
+		STATUS_LINE=" [ $(iwgetid -r): ${_TMP_NET} ]$STATUS_LINE"
 	fi
 }
 
