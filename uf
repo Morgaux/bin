@@ -7,6 +7,8 @@
 
 UFDIR="$HOME/src/ufetch"
 
+[ -d "$UFDIR" ] || exit 1
+
 for UF in $(echo "${UFDIR}/ufetch-"* | tr ' -' '\n ' | grep -v png | awk '{print $2}')
 do
 	if grep -q -i "$UF" /etc/*release* >/dev/null 2>&1
