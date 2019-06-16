@@ -50,51 +50,58 @@ die() {
 }
 
 clock_status() {
-	STATUS_LINE=" [ $(date +'%a %b %d %R:%S') ]$STATUS_LINE"
+	date +'%a %b %d %R:%S'
 }
 
 audio_status() {
-	[ -x "$(command -v amixer)" ] || return 0
+	[ -x "$(command -v amixer)" ] || return 1
 
-	if [ "$(amixer get Master | tail -1 | awk '{print $6}' | tr -d '[]')" = "on" ]
-	then
-		# volume % with leading space for padding if <10%
-		_TMP_VOL="$(amixer get Master | tail -1 | awk '{ print $5 }' | tr -d '[]')"
-		VOL="$(printf "%3s" "$_TMP_VOL")"
-	else
-		# mute symbol
-		VOL="OFF"
-	fi
-	STATUS_LINE=" [ Vol: $VOL ]$STATUS_LINE"
+	AUDIO="$(amixer get Master | tail -1 | awk '{print $6}' | tr -d '[]')"
+	_TMP_VOL="$(amixer get Master | tail -1 | awk '{ print $5 }' | tr -d '[]')"
+	VOL="$(printf "%3s" "$_TMP_VOL")"
+
+	echo "$AUDIO $VOL"
 }
 
 net_status() {
-	if [ -f /proc/net/wireless ] && [ "$(cat "$NET_UP_FILE")" = "TRUE" ]
-	then
-		_TMP_NET="$(tail -1 /proc/net/wireless | awk '{print $3}' | tr -d '.')%"
-		STATUS_LINE=" [ $(iwgetid -r): ${_TMP_NET} ]$STATUS_LINE"
-	fi
+	[ -f /proc/net/wireless ] && [ "$(cat "$NET_UP_FILE")" = "TRUE" ] || return 1
+
+	_TMP_NET="$(tail -1 /proc/net/wireless | awk '{print $3}' | tr -d '.')%"
+	_TMP_SSID=""
+
+	[ -x "$(command -v iwgetid)" ] && _TMP_SSID="$(iwgetid -r): "
+
+	echo "${_TMP_SSID}${_TMP_NET}"
 }
 
 battery_status() {
-	if [ -x "$(command -v acpi)" ]
-	then
-		# battery percentage
-		PER="$(acpi | awk '{print $4}' | tr -d ',')"
-		# Charging/Discharging state
-		#BAT="$(acpi | awk '{print $3}' | tr -d ',')"
-		STATUS_LINE=" [ Bat: $PER ]$STATUS_LINE"
-	fi
+	[ -x "$(command -v acpi)" ] || return 1
+
+	# battery percentage
+	PER="$(acpi | awk '{print $4}' | tr -d ',')"
+
+	# Charging/Discharging state
+	BAT="$(acpi | awk '{print $3}' | tr -d ',')"
+
+	echo "$BAT $PER"
 }
 
 update_status() {
-	# reset status to a space
-	STATUS_LINE=" "
+	# reset status
+	STATUS_LINE=""
+	TOP_STATUS=""
+	BOT_STATUS=""
 
-	clock_status	# date and time
-	audio_status	# volume
-	net_status	# network strength
-	battery_status	# battery
+	TOP_STATUS="$(clock_status)"
+
+	_TMP_AUDIO_STATUS="$(audio_status)"
+	_TMP_NETWORK_STATUS="$(net_status)"
+	_TMP_BATTERY_STATUS="$(battery_status)"
+	[ -n "$_TMP_AUDIO_STATUS" ] && BOT_STATUS="$_TMP_AUDIO_STATUS"
+	[ -n "$_TMP_NETWORK_STATUS" ] && BOT_STATUS="$_TMP_NETWORK_STATUS"
+	[ -n "$_TMP_BATTERY_STATUS" ] && BOT_STATUS="$_TMP_BATTERY_STATUS"
+
+	STATUS_LINE="${TOP_STATUS};${BOT_STATUS}"
 
 	#put it in the xsetrootname
 	if [ -x "$(command -v xsetroot)" ] && [ -x "$(command -v dwm)" ]
@@ -108,14 +115,14 @@ update_status() {
 is_net_connected() {
 	# predicate function, exit code 0 = true, else false
 	[ -x "$(command -v ping)" ] || err "ping is not installed, are you crazy?" || return 1
+
 	ping -c 1 -w "$PING_DEADLINE" "$PING_IP" >/dev/null 2>&1 && return 0
+
 	err "could not reach $PING_IP, system offline"
 	return 1
 }
 
-check_network() {
-	while true
-	do
+check_net_is_up() {
 		NET_UP_STATUS="FALSE"
 
 		if is_net_connected
@@ -126,7 +133,12 @@ check_network() {
 		echo $NET_UP_STATUS > "$NET_UP_FILE"
 
 		log "Network is up: $NET_UP_STATUS"
+}
 
+check_network() {
+	while true
+	do
+		check_net_is_up
 		sleep 120 # 2 minutes
 	done
 }
@@ -139,7 +151,8 @@ main() {
 		return 0
 	}
 
-	check_network & # check network in the background
+	check_net_is_up # check the network conection
+	check_network & # keep checking network in the background
 
 	log "Entering main($*) loop."
 	while true
@@ -196,7 +209,7 @@ echo "$$" > "$PIDFILE" || die "Could not create PID file"
 
 # call main
 log "exec main($*) {...}"
-main "$@" >> "$LOGFILE" 2>&1
+main "$@" 2>&1 | tee "$LOGFILE" || err "cannot log main($*) {...} output"
 log "main($*) {...} completed with exit code $?"
 
 # Remove PID file
