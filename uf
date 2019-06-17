@@ -7,7 +7,7 @@
 
 UFDIR="$HOME/src/ufetch"
 UFREPO="https://gitlab.com/jschx/ufetch"
-OSDETAILS="$(uname -a | cat - /etc/*release*)"
+OSDETAILS="$(cat /etc/*release*)"
 OSLIST=""
 
 mkdir -p "$(dirname $UFDIR)"
@@ -23,29 +23,35 @@ then
 	log "$(git clone "$UFREPO" "$UFDIR" 2>&1)"
 fi
 
-OSLIST="$(\
-		for OS in \
-			$(echo "${UFDIR}/ufetch-"* | \
-				tr ' -' '\n ' | \
-				grep -v png | \
-				awk '{print $2}'); \
-		do \
-			if echo "$OSDETAILS" | grep -q -i "$OS"; \
-			then \
-				echo "$(echo "$OSDETAILS" | \
-					tr ' ' '\n' | \
-					grep -i $OS | \
-					wc -l):$OS"; \
-			fi \
-		done\
-	)"
+os_list() {
+	echo "$(\
+			for OS in \
+				$(echo "${UFDIR}/ufetch-"* | \
+					tr ' -' '\n ' | \
+					grep -v png | \
+					awk '{print $2}'); \
+			do \
+				if echo "$OSDETAILS" | grep -q -i "$OS"; \
+				then \
+					echo "$(echo "$OSDETAILS" | \
+						tr ' ' '\n' | \
+						grep -i $OS | \
+						wc -l):$OS"; \
+				fi \
+			done\
+		)"
+}
 
-[ -n "$OSLIST" ] || {
+[ -n "$(os_list)" ] || {
+	OSDETAILS="$(uname -a | cat - /etc/*release*)"
+}
+
+[ -n "$(os_list)" ] || {
 	err "no ufetch selected"
 	exit 1
 }
 
-exec "${UFDIR}/ufetch-$(echo "$OSLIST" | \
+exec "${UFDIR}/ufetch-$(echo "$(os_list)" | \
 	sort -r -n | \
 	head -1 | \
 	tr ':' ' ' | \
