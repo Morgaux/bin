@@ -6,24 +6,48 @@
 #
 
 UFDIR="$HOME/src/ufetch"
+UFREPO="https://gitlab.com/jschx/ufetch"
+OSDETAILS="$(uname -a | cat - /etc/*release*)"
+OSLIST=""
 
-[ -d "$UFDIR" ] || exit 1
+mkdir -p "$(dirname $UFDIR)"
 
-for UF in $(echo "${UFDIR}/ufetch-"* | tr ' -' '\n ' | grep -v png | awk '{print $2}')
-do
-	if grep -q -i "$UF" /etc/*release* >/dev/null 2>&1
-	then
-		"ufetch-$UF" 2>/dev/null
-		exit $?
-	fi
+if [ ! -d "$UFDIR" ]
+then
+	[ -x "$(command -v git)" ] || {
+		err "ufetch could not be installed, please install git first"
+		exit 1
+	}
 
-	if uname -a | grep -q -i "$UF"
-	then
-		"ufetch-$UF" 2>/dev/null
-		exit $?
-	fi
-done
+	log "ufetch not installed, cloning $UFREPO"
+	log "$(git clone "$UFREPO" "$UFDIR" 2>&1)"
+fi
 
-err "no ufetch selected"
-exit 1
+OSLIST="$(\
+		for OS in \
+			$(echo "${UFDIR}/ufetch-"* | \
+				tr ' -' '\n ' | \
+				grep -v png | \
+				awk '{print $2}'); \
+		do \
+			if echo "$OSDETAILS" | grep -q -i "$OS"; \
+			then \
+				echo "$(echo "$OSDETAILS" | \
+					tr ' ' '\n' | \
+					grep -i $OS | \
+					wc -l):$OS"; \
+			fi \
+		done\
+	)"
+
+[ -n "$OSLIST" ] || {
+	err "no ufetch selected"
+	exit 1
+}
+
+exec "${UFDIR}/ufetch-$(echo "$OSLIST" | \
+	sort -r -n | \
+	head -1 | \
+	tr ':' ' ' | \
+	awk '{print $2}')"
 
