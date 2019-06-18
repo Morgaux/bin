@@ -98,10 +98,10 @@ update_status() {
 	_TMP_NETWORK_STATUS="$(net_status)"
 	_TMP_BATTERY_STATUS="$(battery_status)"
 	[ -n "$_TMP_AUDIO_STATUS" ] && BOT_STATUS="$_TMP_AUDIO_STATUS"
-	[ -n "$_TMP_NETWORK_STATUS" ] && BOT_STATUS="$_TMP_NETWORK_STATUS"
-	[ -n "$_TMP_BATTERY_STATUS" ] && BOT_STATUS="$_TMP_BATTERY_STATUS"
+	[ -n "$_TMP_NETWORK_STATUS" ] && BOT_STATUS="$_TMP_NETWORK_STATUS | $BOT_STATUS"
+	[ -n "$_TMP_BATTERY_STATUS" ] && BOT_STATUS="$_TMP_BATTERY_STATUS | $BOT_STATUS"
 
-	STATUS_LINE="${TOP_STATUS};${BOT_STATUS}"
+	STATUS_LINE="${BOT_STATUS} | ${TOP_STATUS}"
 
 	#put it in the xsetrootname
 	if [ -x "$(command -v xsetroot)" ] && [ -x "$(command -v dwm)" ]
