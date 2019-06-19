@@ -10,7 +10,7 @@
 # Although included in the ~/bin directory, it is writen in pure sh and has no
 # dependencies on the other sripts in this repository. This template allows any
 # arbitrary .sh script to be used as a daemon, simply by placing the contents
-# in the main function. This can even be automated with sed to create a coppy
+# in the main function. This can even be automated with sed to create a copy
 # with the main function filled out. Although, helper funtions would need to be
 # declared out side of the main().
 #
@@ -61,33 +61,40 @@
 while [ "$#" -gt 0 ]
 do
 	case "$1" in
-		-f|--fork) # [ TRUE | FALSE ], fork to background
+		-f|--fork) # [ TRUE | FALSE ], fork to background, default TRUE
 			OPT_FORK="TRUE"
-			if [ "$#" -gt 1 ]
+			if [ "$#" -gt 1 ] && \
+				( [ "$2" = "TRUE" ] || [ "$2" = "FALSE" ] )
 			then
-				if [ "$2" = "TRUE" ] || [ "$2" = "FALSE" ]
-				then
-					OPT_FORK="$2"
-					shift # shift value if used
-				fi
+				OPT_FORK="$2"
+				shift # shift value if used
 			fi
 			;;
-		--prefix) #
+		-v) # log mesages verbously
+			OPT_VERBOSE="TRUE"
+			;;
+		-e|--exec) # { COMMAND [ ARGS ] }, sets main() command
 			shift
-			[ "$#" -gt 0 ] || die "$1 takes one argument, none found"
+			[ "$#" -gt 0 ] || die "$1 takes an argument, none found"
+			EXEC_CMD="$*"
+			break
+			;;
+		--prefix) # { DIR }, sets PREFIX directory
+			shift
+			[ "$#" -gt 0 ] || die "$1 takes an argument, none found"
 			PREFIX="$1"
 			;;
 		--name) # { NAME }, sets SELF
 			shift
-			[ "$#" -gt 0 ] || die "$1 takes one argument, none found"
+			[ "$#" -gt 0 ] || die "$1 takes an argument, none found"
 			SELF="$1"
 			;;
-		--tmp) #
+		--tmp) # { DIR }, sets TMP_DIR
 			shift
-			[ "$#" -gt 0 ] || die "$1 takes one argument, none found"
+			[ "$#" -gt 0 ] || die "$1 takes an argument, none found"
 			TMP_DIR="$1"
 			;;
-		*) # option not used but daemon, pass to main
+		*) # option not used by daemon wrapper, pass rest to main
 			break
 			;;
 	esac
@@ -97,10 +104,11 @@ done
 SRC_DIR="$(dirname "$0")"
 PWD_DIR="$PWD"
 RUN_DIR="/"
-[ -n "$PREFIX" ] || PREFIX="" # leave blank to default to "/"
-[ -n "$SELF" ] || SELF="$(basename "$0")"
-[ -n "$TMP_DIR" ] || TMP_DIR="$PREFIX/tmp"
-[ -n "$OPT_FORK" ] || OPT_FORK="FALSE"
+[ -n "$PREFIX" ]	|| PREFIX="" # leave blank to default to "/"
+[ -n "$SELF" ]		|| SELF="$(basename "$0")"
+[ -n "$TMP_DIR" ]	|| TMP_DIR="$PREFIX/tmp"
+[ -n "$OPT_FORK" ]	|| OPT_FORK="FALSE"
+[ -n "$OPT_VERBOSE" ]	|| OPT_VERBOSE="FALSE"
 PIDFILE="${TMP_DIR}/${SELF}.pid"
 LOGFILE="${TMP_DIR}/${SELF}.log"
 
@@ -114,29 +122,34 @@ LOGFILE="${TMP_DIR}/${SELF}.log"
 log() {
 	_LOG_TIME_STAMP="$(date +%c)"
 	touch "$LOGFILE"
-	echo "$_LOG_TIME_STAMP	$*" >> "$LOGFILE"
+	if [ "$OPT_VERBOSE" = "TRUE" ]
+	then
+		echo "$_LOG_TIME_STAMP	$*" | tee -a "$LOGFILE"
+	else
+		echo "$_LOG_TIME_STAMP	$*" >> "$LOGFILE"
+	fi
 }
 
 # error function
 err() {
+	OPT_VERBOSE="TRUE"
 	log "ERROR:	$*"
+	OPT_VERBOSE="FALSE"
 	return 1
 }
 
 # fatal error function
 die() {
+	OPT_VERBOSE="TRUE"
+	err "FATAL ERROR OCCURED IN PROCESS $$"
 	err "$@"
+	err "EXITING..."
 	exit 1
 }
 
 # main function
 main() {
 	true #no-op
-	for i in 3 2 5 63 64 371 854
-	do
-		echo asdgwebs
-		sleep 5
-	done
 }
 
 
@@ -156,9 +169,11 @@ init_daemon() {
 	} > "$LOGFILE"
 
 	# Init dirs
-	for dir in SRC_DIR PWD_DIR RUN_DIR TMP_DIR
+	for dir in "$SRC_DIR" "$PWD_DIR" "$RUN_DIR" "$TMP_DIR"
 	do
-		mkdir -p "$dir" # enure dirs exist
+		# enure dirs exist
+		mkdir -p "$dir" && continue
+		die "Could not create $dir, 'mkdir -p $dir' exited with code $?"
 	done
 }
 
@@ -176,7 +191,8 @@ main_wrapper() {
 
 	# Process PID file
 	if [ -f "$PIDFILE" ] ; then
-		ps -p "$(cat "$PIDFILE")" >/dev/null 2>&1 && die "PID is still running."
+		ps -p "$(cat "$PIDFILE")" >/dev/null 2>&1 && \
+			die "PID is still running."
 		rm "$PIDFILE"
 	fi
 
@@ -184,12 +200,27 @@ main_wrapper() {
 	echo "$$" > "$PIDFILE" || die "Could not create PID file"
 
 	# call main
-	main "$@" >> "$LOGFILE" 2>&1
+	if [ -z "$EXEC_CMD" ]
+	then
+		log "$( \
+				main "$@" 2>&1 ; \
+				log "main() {...} completed with exit code $?" \
+			)"
+	else
+		[ -x "$(command -v "$(\
+					echo "$EXEC_CMD" | \
+					awk '{print $1}' ; \
+				)")" \
+			] || die "$EXEC_CMD is an invalid command"
 
-	log "main() {...} completed with exit code $?"
+		log "$( \
+				sh -c "$EXEC_CMD" 2>&1 ; \
+				log "$EXEC_CMD completed with exit code $?" \
+			)"
+	fi
 
 	# Remove PID file
-	rm "$PIDFILE" || die "Could not remove PID file."
+	rm -f "$PIDFILE" || die "Could not remove PID file."
 }
 
 case "$OPT_FORK" in
