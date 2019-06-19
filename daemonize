@@ -58,12 +58,49 @@
 #                              Configuration vars                              #
 ################################################################################
 
-PREFIX="" # leave blank to to default to "/"
-SELF="$(basename "$0")"
+while [ "$#" -gt 0 ]
+do
+	case "$1" in
+		-f|--fork) # [ TRUE | FALSE ], fork to background
+			OPT_FORK="TRUE"
+			if [ "$#" -gt 1 ]
+			then
+				if [ "$2" = "TRUE" ] || [ "$2" = "FALSE" ]
+				then
+					OPT_FORK="$2"
+					shift # shift value if used
+				fi
+			fi
+			;;
+		--prefix) #
+			shift
+			[ "$#" -gt 0 ] || die "$1 takes one argument, none found"
+			PREFIX="$1"
+			;;
+		--name) # { NAME }, sets SELF
+			shift
+			[ "$#" -gt 0 ] || die "$1 takes one argument, none found"
+			SELF="$1"
+			;;
+		--tmp) #
+			shift
+			[ "$#" -gt 0 ] || die "$1 takes one argument, none found"
+			TMP_DIR="$1"
+			;;
+		*) # option not used but daemon, pass to main
+			break
+			;;
+	esac
+	shift
+done
+
 SRC_DIR="$(dirname "$0")"
 PWD_DIR="$PWD"
 RUN_DIR="/"
-TMP_DIR="$PREFIX/tmp"
+[ -n "$PREFIX" ] || PREFIX="" # leave blank to default to "/"
+[ -n "$SELF" ] || SELF="$(basename "$0")"
+[ -n "$TMP_DIR" ] || TMP_DIR="$PREFIX/tmp"
+[ -n "$OPT_FORK" ] || OPT_FORK="FALSE"
 PIDFILE="${TMP_DIR}/${SELF}.pid"
 LOGFILE="${TMP_DIR}/${SELF}.log"
 
@@ -95,6 +132,11 @@ die() {
 # main function
 main() {
 	true #no-op
+	for i in 3 2 5 63 64 371 854
+	do
+		echo asdgwebs
+		sleep 5
+	done
 }
 
 
@@ -103,20 +145,22 @@ main() {
 #                                Init daemon                                   #
 ################################################################################
 
-# Init logfile
-{
-	echo "Logfile for $SELF - $0"
-	echo "PIDFILE:	$PIDFILE"
-	echo "LOGFILE:	$LOGFILE"
-	echo "PWD_DIR:	$PWD_DIR"
-	echo "RUN_DIR:	$RUN_DIR"
-} > "$LOGFILE"
+init_daemon() {
+	# Init logfile
+	{
+		echo "Logfile for $SELF - $0"
+		echo "PIDFILE:	$PIDFILE"
+		echo "LOGFILE:	$LOGFILE"
+		echo "PWD_DIR:	$PWD_DIR"
+		echo "RUN_DIR:	$RUN_DIR"
+	} > "$LOGFILE"
 
-# Init dirs
-for dir in SRC_DIR PWD_DIR RUN_DIR TMP_DIR
-do
-	mkdir -p "$dir" # enure dirs exist
-done
+	# Init dirs
+	for dir in SRC_DIR PWD_DIR RUN_DIR TMP_DIR
+	do
+		mkdir -p "$dir" # enure dirs exist
+	done
+}
 
 
 
@@ -124,25 +168,41 @@ done
 #                                  Run daemon                                  #
 ################################################################################
 
-# Change to safe running dir
-cd "$RUN_DIR" || die "Could not enter RUN_DIR"
+main_wrapper() {
+	init_daemon
 
-# Process PID file
-if [ -f "$PIDFILE" ] ; then
-	ps -p "$(cat "$PIDFILE")" >/dev/null 2>&1 && die "PID is still running."
-	rm "$PIDFILE"
-fi
+	# Change to safe running dir
+	cd "$RUN_DIR" || die "Could not enter RUN_DIR"
 
-# Create PID file
-echo "$$" > "$PIDFILE" || die "Could not create PID file"
+	# Process PID file
+	if [ -f "$PIDFILE" ] ; then
+		ps -p "$(cat "$PIDFILE")" >/dev/null 2>&1 && die "PID is still running."
+		rm "$PIDFILE"
+	fi
 
-# call main
-main "$@" >> "$LOGFILE" 2>&1
+	# Create PID file
+	echo "$$" > "$PIDFILE" || die "Could not create PID file"
 
-log "main() {...} completed with exit code $?"
+	# call main
+	main "$@" >> "$LOGFILE" 2>&1
 
-# Remove PID file
-rm "$PIDFILE" || die "Could not remove PID file."
+	log "main() {...} completed with exit code $?"
+
+	# Remove PID file
+	rm "$PIDFILE" || die "Could not remove PID file."
+}
+
+case "$OPT_FORK" in
+	"TRUE") # fork main()
+		( main_wrapper "$@" </dev/null >/dev/null 2>&1 & ) &
+		;;
+	"FALSE") # don't fork main()
+		main_wrapper "$@"
+		;;
+	*) # unreachable
+		die "$OPT_FORK is invalid value for boolean OPT_FORK"
+		;;
+esac
 
 # exit success
 exit 0
