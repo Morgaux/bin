@@ -5,7 +5,5 @@
 # Run a Python3 script
 #
 
-dependencies python3 || exit 1
-
-python3 "$@"
+[ -x "$(command -v python3)" ] && exec python3 "$@"
 

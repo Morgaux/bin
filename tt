@@ -5,14 +5,10 @@
 # open a tabbed st instance
 #
 
-hasX || err "no X running..." || exit 1
-
-[ -x "$(command -v st)" ] || err "simple terminal not found" || exit 1
-[ -x "$(command -v tabbed)" ] || err "tabbed not found" || exit 1
-
-log "opening tabbed terminal..."
+hasX && \
+	[ -x "$(command -v st)" ] && \
+	[ -x "$(command -v tabbed)" ] || \
+	exit 1
 
 tabbed -c -k -r 2 st -w '' -t 'floating-st' "$@"
-
-log "tabbed terminal closed with exit code $?"
 
