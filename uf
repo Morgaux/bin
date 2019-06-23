@@ -48,7 +48,7 @@ os_list() {
 }
 
 [ -n "$(os_list "$OSDETAILS")" ] || {
-	err "no ufetch selected"
+	echo "no ufetch selected" 1>&2
 	exit 1
 }
 
