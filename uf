@@ -19,9 +19,8 @@ then
 		exit 1
 	}
 
-	echo "ufetch not installed, cloning $UFREPO"
-	echo git clone "$UFREPO" "$UFDIR"...
-	echo "$(git clone "$UFREPO" "$UFDIR" 2>&1)"
+	echo "ufetch not installed, cloning $UFREPO" 1>&2
+	echo "$(git clone "$UFREPO" "$UFDIR")" 1>&2
 fi
 
 os_list() {
