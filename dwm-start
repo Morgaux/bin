@@ -18,11 +18,15 @@ sleep 1
 # networking
 [ -x /usr/bin/nm-applet ] && /usr/bin/nm-applet &
 
-# transparency
+# compositor / transparency
 [ -x "$(command -v compton)" ] && compton -b -c
 
 # set wallpaper
-[ -x "$(command -v feh)" ] && feh -z -Z --bg-scale /home/morgaux/var/Pictures/Wallpapers/Boy4aow.png
+[ -x "$(command -v feh)" ] && {
+	feh -z -Z --bg-scale /home/morgaux/var/Pictures/Wallpapers/Boy4aow.png
+}
 
-[ -x "$(command -v dwm)" ] && exec /usr/local/bin/dwm > /home/morgaux/tmp/dwm.log
+[ -x "$(command -v dwm)" ] && {
+	exec /usr/local/bin/dwm > /home/morgaux/tmp/dwm.log 2>&1
+}
 

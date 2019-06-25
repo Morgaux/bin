@@ -58,59 +58,16 @@
 #                              Configuration vars                              #
 ################################################################################
 
-while [ "$#" -gt 0 ]
-do
-	case "$1" in
-		-f|--fork) # [ TRUE | FALSE ], fork to background, default TRUE
-			OPT_FORK="TRUE"
-			if [ "$#" -gt 1 ] && \
-				( [ "$2" = "TRUE" ] || [ "$2" = "FALSE" ] )
-			then
-				OPT_FORK="$2"
-				shift # shift value if used
-			fi
-			;;
-		-v) # log mesages verbously
-			OPT_VERBOSE="TRUE"
-			;;
-		-e|--exec) # { COMMAND [ ARGS ] }, sets main() command
-			shift
-			[ "$#" -gt 0 ] || die "$1 takes an argument, none found"
-			EXEC_CMD="$*"
-			break
-			;;
-		--prefix) # { DIR }, sets PREFIX directory
-			shift
-			[ "$#" -gt 0 ] || die "$1 takes an argument, none found"
-			PREFIX="$1"
-			;;
-		--name) # { NAME }, sets SELF
-			shift
-			[ "$#" -gt 0 ] || die "$1 takes an argument, none found"
-			SELF="$1"
-			;;
-		--tmp) # { DIR }, sets TMP_DIR
-			shift
-			[ "$#" -gt 0 ] || die "$1 takes an argument, none found"
-			TMP_DIR="$1"
-			;;
-		*) # option not used by daemon wrapper, pass rest to main
-			break
-			;;
-	esac
-	shift
-done
-
+PREFIX="" # leave blank to default to "/"
+SELF="$(basename "$0")"
 SRC_DIR="$(dirname "$0")"
 PWD_DIR="$PWD"
 RUN_DIR="/"
-[ -n "$PREFIX" ]	|| PREFIX="" # leave blank to default to "/"
-[ -n "$SELF" ]		|| SELF="$(basename "$0")"
-[ -n "$TMP_DIR" ]	|| TMP_DIR="$PREFIX/tmp"
-[ -n "$OPT_FORK" ]	|| OPT_FORK="FALSE"
-[ -n "$OPT_VERBOSE" ]	|| OPT_VERBOSE="FALSE"
+TMP_DIR="$PREFIX/tmp"
 PIDFILE="${TMP_DIR}/${SELF}.pid"
 LOGFILE="${TMP_DIR}/${SELF}.log"
+OPT_FORK="TRUE"
+OPT_VERBOSE="FALSE"
 
 
 
@@ -132,9 +89,10 @@ log() {
 
 # error function
 err() {
+	_TMP_OPT_VERBOSE="$OPT_VERBOSE"
 	OPT_VERBOSE="TRUE"
-	log "ERROR:	$*"
-	OPT_VERBOSE="FALSE"
+	log "ERROR: $*"
+	OPT_VERBOSE="${_TMP_OPT_VERBOSE}"
 	return 1
 }
 
@@ -192,7 +150,7 @@ main_wrapper() {
 	# Process PID file
 	if [ -f "$PIDFILE" ] ; then
 		ps -p "$(cat "$PIDFILE")" >/dev/null 2>&1 && \
-			die "PID is still running."
+			die "PID $(cat "$PIDFILE") is still running."
 		rm "$PIDFILE"
 	fi
 
@@ -200,24 +158,8 @@ main_wrapper() {
 	echo "$$" > "$PIDFILE" || die "Could not create PID file"
 
 	# call main
-	if [ -z "$EXEC_CMD" ]
-	then
-		log "$( \
-				main "$@" 2>&1 ; \
-				log "main() {...} completed with exit code $?" \
-			)"
-	else
-		[ -x "$(command -v "$(\
-					echo "$EXEC_CMD" | \
-					awk '{print $1}' ; \
-				)")" \
-			] || die "$EXEC_CMD is an invalid command"
-
-		log "$( \
-				sh -c "$EXEC_CMD" 2>&1 ; \
-				log "$EXEC_CMD completed with exit code $?" \
-			)"
-	fi
+	main "$@" 2>&1 >> "$LOGFILE"
+	log "main() {...} completed with exit code $?"
 
 	# Remove PID file
 	rm -f "$PIDFILE" || die "Could not remove PID file."

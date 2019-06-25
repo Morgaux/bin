@@ -4,21 +4,15 @@
 
 # floating st wrapper for dwm
 
-GEOMETRY=""
+[ -x "$(command -v st)" -a -x "$(command -v tabbed)" ] || exit 1
 
-hasX || err "no display found..." || exit 1
+FST_CLASS="floating-st"
 
-dependencies st tabbed hacksaw || exit 1
-
-GEOMETRY=$(hacksaw -n) 
-
-if [ -z "$GEOMETRY" ]
+if [ -x "$(command -v hacksaw)" ]
 then
-	st -T floating-st -c floating-st &
-	err "Could not set window geometry, using fallback" || exit 2
+	GEOMETRY=$(hacksaw) 
+	tabbed -n "$FST_CLASS" -d -c -g "$GEOMETRY" -2 st -w '' &
+else
+	st -c "$FST_CLASS" &
 fi
-
-tabbed -n floating-st -d -c -g "$GEOMETRY" -r 2 st -w '' -T floating-st &
-
-exit 0
 

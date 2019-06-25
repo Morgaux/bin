@@ -15,12 +15,12 @@ mkdir -p "$(dirname $UFDIR)"
 if [ ! -d "$UFDIR" ]
 then
 	[ -x "$(command -v git)" ] || {
-		err "ufetch could not be installed, please install git first"
+		echo "Cannot clone ufetch, git missing or not found" 1>&2
 		exit 1
 	}
 
-	log "ufetch not installed, cloning $UFREPO"
-	log "$(git clone "$UFREPO" "$UFDIR" 2>&1)"
+	echo "ufetch not installed, cloning $UFREPO" 1>&2
+	echo "$(git clone "$UFREPO" "$UFDIR")" 1>&2
 fi
 
 os_list() {
@@ -31,9 +31,9 @@ os_list() {
 					grep -v png | \
 					awk '{print $2}'); \
 			do \
-				if echo "$OSDETAILS" | grep -q -i "$OS"; \
+				if echo "$@" | grep -q -i "$OS"; \
 				then \
-					echo "$(echo "$OSDETAILS" | \
+					echo "$(echo "$@" | \
 						tr ' ' '\n' | \
 						grep -i $OS | \
 						wc -l):$OS"; \
@@ -42,16 +42,16 @@ os_list() {
 		)"
 }
 
-[ -n "$(os_list)" ] || {
+[ -n "$(os_list "$OSDETAILS")" ] || {
 	OSDETAILS="$(uname -a | cat - /etc/*release*)"
 }
 
-[ -n "$(os_list)" ] || {
-	err "no ufetch selected"
+[ -n "$(os_list "$OSDETAILS")" ] || {
+	echo "no ufetch selected" 1>&2
 	exit 1
 }
 
-exec "${UFDIR}/ufetch-$(echo "$(os_list)" | \
+exec "${UFDIR}/ufetch-$(echo "$(os_list "$OSDETAILS")" | \
 	sort -r -n | \
 	head -1 | \
 	tr ':' ' ' | \

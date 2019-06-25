@@ -5,9 +5,10 @@
 # save a Screen Shot
 #
 
-hasX || exit 1
-
-dependencies scrot xdg-user-dir || exit 1
+hasX && \
+	[ -x "command -v scrot" ] && \
+	[ -x "command -v xdg-user-dir" ] && \
+	exit 1
 
 SAVE_DIR="$(xdg-user-dir PICTURES)/Screenshots/"
 
