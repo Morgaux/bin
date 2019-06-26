@@ -27,6 +27,7 @@ die() {
 	if is_int "$1"
 	then
 		_EXIT_STATUS=$1
+		shift
 	else
 		_EXIT_STATUS=1
 	fi
@@ -35,21 +36,53 @@ die() {
 	exit "$_EXIT_STATUS"
 }
 
-bright_up() {}
-bright_dn() {}
-bright-eq() {}
+add() { # TODO
+	echo "$1 + $2"
+}
+
+sub() { # TODO
+	echo "$1 - $2"
+}
+
+bright_up() {
+	NEW_PERCENT="$(add "$CURRENT" "$1")"
+
+	if [ "$NEW_PERCENT" -gt 100 ]
+	then
+		return 0
+	fi
+
+	bright_eq "$NEW_PERCENT"
+}
+
+bright_dn() {
+	NEW_PERCENT="$(sub "$CURRENT" "$1")"
+
+	if [ "$NEW_PERCENT" -lt 0 ]
+	then
+		return 0
+	fi
+
+	bright_eq "$NEW_PERCENT"
+}
+
+bright_eq() { # TODO
+	return 0
+}
 
 main() {
 	[ "$#" -eq 2 ] || die 128 "Not enough arguments"
 	is_int "$2" || die 128 "$2 is not a number"
 
 	case "$1" in
-		+) bright_up $2;;
-		-) bright_dn $2;;
-		=) bright_eq $2;;
+		+) bright_up "$2" ;;
+		-) bright_dn "$2" ;;
+		=) bright_eq "$2" ;;
 		*) die 128 "Invalid argument: $1"
 	esac
+
+	return "$_EXIT_STATUS"
 }
 
-main $@
+main "$@"
 
