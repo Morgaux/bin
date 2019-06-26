@@ -1,12 +1,9 @@
 #!/bin/sh
-
-#
 # http://gitlab.com/morgaux/bin
+
 #
-
-# lauch mincraft it is installed
-
-[ -f ~/.minecraft/launcher.jar ] || err "minecraft not installed" || exit 1
+# lauch mincraft
+#
 
 java -jar ~/.minecraft/launcher.jar
 

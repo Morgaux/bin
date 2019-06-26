@@ -2,34 +2,26 @@
 #http://gitlab.com/morgaux/bin
 
 #
-# dmenu based command launcher
+# dmenu / slmenu based command launcher
 #
-
-MENU=""
-RUNNER=""
 
 if hasX; then
 	# Choose menu util
-	[ -x "$(command -v dmenu)" ] || err "dmenu not found" || exit 1
 	MENU="$(command -v dmenu)"
 
 	# Choose term util
-	[ -x "$(command -v st)" ] || err "st not found" || exit 1
-	RUNNER="$(command -v st) -e"
+	RUNNER="$(command -v st)"
+	ARGS="-e"
 else
 	# Choose menu util
-	[ -x "$(command -v slmenu)" ] || err "slmenu not found" || exit 1
 	MENU="$(command -v slmenu)"
 
 	# Choose term util
-	RUNNER="/bin/sh -c" # just run the command, no term
+	RUNNER="/bin/sh"
+	ARGS="-c"
 fi
 
-# Get command
-CMD="$(echo "$*" | tr " "  "\n" | "$MENU" -p 'Enter a command: ' -b)"
+[ -x "$MENU" ] && [ -x "$RUNNER" ] || exit 1
 
-log "running command: $CMD"
-
-# Run command
-$RUNNER "$CMD"
+$RUNNER "$ARGS" "$(echo "$*" | tr " "  "\n" | "$MENU" -p 'Enter a command: ')"
 

@@ -60,7 +60,7 @@ get_version() { # string, ( void )
 
 	if [ -x "$(command -v curl)" ]
 	then
-		curl -Ls -o /dev/null -w %{url_effective} "$VERURL" 2>&1 | grep -o "tag.*" | cut -c 5-
+		curl -Ls -o /dev/null -w '%{url_effective}' "$VERURL" 2>&1 | grep -o "tag.*" | cut -c 5-
 		return 0
 	fi
 
@@ -102,7 +102,7 @@ print_latest() { # void, ( void )
 }
 
 usage() { # void, ( void )
-	echo "	$(basename $0) - a neofetch installer and shortcut"
+	echo "	$(basename "$0") - a neofetch installer and shortcut"
 	echo "	usage: [ -eiIruU] [ -h | --help ]"
 	echo "	options:"
 	echo "		-e"
@@ -175,7 +175,7 @@ default() {
 }
 
 main() { # void, ( string[] )
-	ARGV="$@" # Remember original args
+	ARGV="$*" # Remember original args
 
 	if [ "$#" -gt 0 ]
 	then

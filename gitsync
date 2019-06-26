@@ -4,7 +4,10 @@
 # sync local git repo
 ##
 
-dependencies git log err || exit 1
+for i in git log err
+do
+	[ -x "$(command -v $i)" ] || exit 1
+done
 
 SELF="$(basename "$0")"
 PIDFILE="$HOME/var/${SELF}.pid"

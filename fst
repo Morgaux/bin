@@ -4,14 +4,13 @@
 
 # floating st wrapper for dwm
 
-[ -x "$(command -v st)" -a -x "$(command -v tabbed)" ] || exit 1
+[ -x "$(command -v st)" ] || exit 1
 
 FST_CLASS="floating-st"
 
-if [ -x "$(command -v hacksaw)" ]
+if [ -x "$(command -v hacksaw)" ] && [ -x "$(command -v tabbed)" ]
 then
-	GEOMETRY=$(hacksaw) 
-	tabbed -n "$FST_CLASS" -d -c -g "$GEOMETRY" -2 st -w '' &
+	tabbed -n "$FST_CLASS" -d -c -g "$(hacksaw)" -2 st -w '' &
 else
 	st -c "$FST_CLASS" &
 fi
