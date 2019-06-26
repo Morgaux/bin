@@ -8,14 +8,15 @@
 SEARCH_URL="http://duckduckgo.com/?q="
 BROWSER_CMD="w3m"
 BROWSER_FLAGS="-o meta_refresh=1"
-dependencies slmenu $BROWSER_CMD || exit 1
+
+[ -x "$(command -v slmenu)" ] && [ -x "$(command -v $BROWSER_CMD)" ] || exit 1
 
 if [ "$#" -gt 0 ]
 then
-	QUERRY="$(echo $* | sed 's/ /%20/g')"
+	QUERRY="$(echo "$@" | sed 's/ /%20/g')"
 else
-	QUERRY="$(echo | slmenu -i -l 5 -p 'search:' | sed 's/ /%20/g')"
+	QUERRY="$(echo "" | slmenu -i -l 5 -p 'search:' | sed 's/ /%20/g')"
 fi
 
-$BROWSER_CMD $BROWSER_FLAGS ${SEARCH_URL}${QUERRY}
+$BROWSER_CMD "$BROWSER_FLAGS" "${SEARCH_URL}${QUERRY}"
 

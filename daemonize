@@ -158,7 +158,7 @@ main_wrapper() {
 	echo "$$" > "$PIDFILE" || die "Could not create PID file"
 
 	# call main
-	main "$@" 2>&1 >> "$LOGFILE"
+	main "$@" >> "$LOGFILE" 2>&1
 	log "main() {...} completed with exit code $?"
 
 	# Remove PID file

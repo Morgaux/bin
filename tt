@@ -10,5 +10,5 @@ hasX && \
 	[ -x "$(command -v tabbed)" ] || \
 	exit 1
 
-tabbed -c -k -r 2 st -w '' -t 'floating-st' "$@"
+tabbed -c -k -r 2 st -w '' -t 'st' "$@"
 

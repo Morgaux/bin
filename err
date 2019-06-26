@@ -5,20 +5,12 @@
 # print message to stderr
 #
 
-[ $# -gt 0 ] && ERRMSG="$*" || ERRMSG="generic error"
-ERRMSG="${ERRMSG}. $(excuse)"
-
+ERRMSG="${*}. $(excuse)"
 PARENT="$(ps -o comm= $PPID)"
 
-echo "$PARENT: $ERRMSG" 1>&2
+echo "${PARENT}: ${ERRMSG}" 1>&2
 
-if ps hf -opid,cmd -C "$$" 1>/dev/null 2>&1 ; then
-	TRACE="$(ps hf -opid,cmd -C "$$" | awk '$2 !~ /^[|\\]/ { print $1 }' | xargs -L 1 ps -o comm= | awk '{printf "%s"" > ",$0}' | sed 's/ > err > xargs > awk > sed > ps >//g')"
-else
-	TRACE="application"
-fi
-
-log "Error in ${TRACE}: ${ERRMSG}"
+log "Error in ${PARENT}: ${ERRMSG}"
 
 exit 1
 

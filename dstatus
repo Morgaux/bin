@@ -23,6 +23,7 @@ STATUS_DELAY="0.1"
 NET_UP_FILE="${TMP_DIR}/${SELF}.net"
 PING_IP="8.8.8.8"
 PING_DEADLINE="5" # seconds until ping gives up and says nope, im offline
+OPT_DUALSTATUS="FALSE"
 
 
 
@@ -66,12 +67,12 @@ audio_status() {
 net_status() {
 	[ -f /proc/net/wireless ] && [ "$(cat "$NET_UP_FILE")" = "TRUE" ] || return 1
 
-	_TMP_NET="$(tail -1 /proc/net/wireless | awk '{print $3}' | tr -d '.')%"
-	_TMP_SSID=""
+	_TMP_NET="$(tail -1 /proc/net/wireless | awk '{print $3}' | tr -d '.')"
+	_TMP_SSID="WiFi"
 
-	[ -x "$(command -v iwgetid)" ] && _TMP_SSID="$(iwgetid -r): "
+	[ -x "$(command -v iwgetid)" ] && _TMP_SSID="$(iwgetid -r)"
 
-	echo "${_TMP_SSID}${_TMP_NET}"
+	echo "${_TMP_SSID}: ${_TMP_NET}%"
 }
 
 battery_status() {
@@ -87,15 +88,37 @@ battery_status() {
 }
 
 update_status() {
-	# reset status
+	# reset statuses (statusi ?)
 	STATUS_LINE=""
 	TOP_STATUS=""
 	BOT_STATUS=""
+	CLOCK_STATUS=""
+	AUDIO_STATUS=""
+	NET_STATUS=""
+	BATTERY_STATUS=""
 
-	STATUS_LINE="[ $(clock_status) ] $STATUS_LINE"
-	STATUS_LINE="[ $(audio_status) ] $STATUS_LINE"
-	STATUS_LINE="[ $(net_status) ] $STATUS_LINE"
-	STATUS_LINE="[ $(battery_status) ] $STATUS_LINE"
+	# get data
+	{ # START silent
+		clock_status   && CLOCK_STATUS="$(clock_status)"
+		audio_status   && AUDIO_STATUS="$(audio_status)"
+		net_status     && NET_STATUS="$(net_status)"
+		battery_status && BATTERY_STATUS="$(battery_status)"
+	} >/dev/null 2>&1 # END silent
+
+	# format data
+	if [ "$OPT_DUALSTATUS" = "TRUE" ]
+	then
+		TOP_STATUS=" ${CLOCK_STATUS} "
+		BOTTOM_STATUS=" ${NET_STATUS} | ${AUDIO_STATUS} | ${BATTERY_STATUS} "
+		STATUS_LINE="${TOP_STATUS};${BOT_STATUS}"
+	else
+		if [ "$OPT_DUALSTATUS" = "FALSE" ]
+		then
+			STATUS_LINE=" ${NET_STATUS} | ${AUDIO_STATUS} | ${BATTERY_STATUS} | ${CLOCK_STATUS} "
+		else
+			die "Invalid value $OPT_DUALSTATUS for OPT_DUALSTATUS"
+		fi
+	fi
 
 	#put it in the xsetrootname
 	if [ -x "$(command -v xsetroot)" ] && [ -x "$(command -v dwm)" ]

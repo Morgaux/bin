@@ -5,12 +5,12 @@
 # Download HPMOR chapters
 #
 
-dependencies w3m || exit 1
+[ -x "$(command -v w3m)" ] || exit 1
 
 PREFIX="$HOME/var/Documents"
 OUT_DIR="$PREFIX/HPMOR"
 
-[ -d "$OUT_DIR" ] || mkdir -p $OUT_DIR
+[ -d "$OUT_DIR" ] || mkdir -p "$OUT_DIR"
 
 generate_all() {
 	for i in    001 002 003 004 005 006 007 008 009 \
@@ -32,7 +32,7 @@ generate_all() {
 }
 
 generate_chapter() { # $1 is a chapter number
-	w3m -dump "http://www.hpmor.com/chapter/$(echo $1 | \
+	w3m -dump "http://www.hpmor.com/chapter/$(echo "$1" | \
 			sed 's/^0*//')" | \
 		sed -n '/Chapter/,$p' | tail -n +3 | \
 		sed '/FanFiction\.net/,$ d'
