@@ -42,16 +42,20 @@ os_list() {
 		)"
 }
 
-[ -n "$(os_list "$OSDETAILS")" ] || {
-	OSDETAILS="$(uname -a | cat - /etc/*release*)"
-}
+if [ -n "$OSDETAILS" ]
+then
+	OS_LIST="$(os_list "$OSDETAILS")"
+else
+	OS_LIST="$(os_list "$(uname -a)")"
+fi
 
-[ -n "$(os_list "$OSDETAILS")" ] || {
+if [ -z "$OS_LIST" ]
+then
 	echo "no ufetch selected" 1>&2
 	exit 1
-}
+fi
 
-exec "${UFDIR}/ufetch-$(echo "$(os_list "$OSDETAILS")" | \
+exec "${UFDIR}/ufetch-$(echo "$OS_LIST" | \
 	sort -r -n | \
 	head -1 | \
 	tr ':' ' ' | \
