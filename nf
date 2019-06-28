@@ -82,7 +82,7 @@ get_latest() { # void, ( void )
 		return 0
 	fi
 
-	return 1
+	die "Could not download neofetch"
 }
 
 print_latest() { # void, ( void )
