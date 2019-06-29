@@ -10,8 +10,8 @@ FST_CLASS="floating-st"
 
 if [ -x "$(command -v hacksaw)" ] && [ -x "$(command -v tabbed)" ]
 then
-	tabbed -n "$FST_CLASS" -d -c -g "$(hacksaw)" -2 st -w '' &
+	exec tabbed -n "$FST_CLASS" -c -g "$(hacksaw)" -r 2 st -w '' &
 else
-	st -c "$FST_CLASS" &
+	exec st -c "$FST_CLASS" &
 fi
 
