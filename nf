@@ -25,20 +25,34 @@ run_as_root() { # void, ( void )
 }
 
 nf_install() { # void, ( void )
-	run_as_root || die "could not install as root"
+	[ "$(id -u)" = "0" ] || run_as_root || die "Could not install as root"
 
-	mkdir -p "$PREFIX/bin" || return "$?"
-	mkdir -p "$MANDIR/man1" || return "$?"
-	cp -p "$TMPDIR/neofetch" "$PREFIX/bin/neofetch" || return "$?"
-	cp -p "$TMPDIR/neofetch.1" "$MANDIR/man1" || return "$?"
-	chmod 755 "$PREFIX/bin/neofetch" || return "$?"
+	mkdir -p "$PREFIX/bin" || \
+		err "Could not create $PREFIX/bin directory" || \
+		return "$?"
+	mkdir -p "$MANDIR/man1" || \
+		err "Could not create $MANDIR/man1 directory" || \
+		return "$?"
+	cp -p "$TMPDIR/neofetch" "$PREFIX/bin/neofetch" || \
+		err "Could not copy $TMPDIR/neofetch to $PREFIX/bin/neofetch" || \
+		return "$?"
+	cp -p "$TMPDIR/neofetch.1" "$MANDIR/man1" || \
+		err "Could not copy $TMPDIR/neofetch.1 to $MANDIR/man1" || \
+		return "$?"
+	chmod 755 "$PREFIX/bin/neofetch" || \
+		err "Could not set correct permissions" || \
+		return "$?"
 }
 
 nf_uninstall() { # void, ( void )
-	run_as_root || die "could not uninstall as root"
+	[ "$(id -u)" = "0" ] || run_as_root || die "Could not uninstall as root"
 
-	rm -rf "$PREFIX/bin/neofetch" || return "$?"
-	rm -rf "$MANDIR/man1/neofetch.1"* || return "$?"
+	rm -rf "$PREFIX/bin/neofetch"  || \
+		err "Could not remove $PREFIX/bin/neofetch" || \
+		return "$?"
+	rm -rf "$MANDIR/man1/neofetch.1"*  || \
+		err "Could not remove $MANDIR/man1/neofetch.1" || \
+		return "$?"
 }
 
 err() { # err, ( string[] )
@@ -64,7 +78,7 @@ get_version() { # string, ( void )
 		return 0
 	fi
 
-	return 1
+	die "Failed to get version"
 }
 
 get_latest() { # void, ( void )
