@@ -18,7 +18,7 @@ run_as_root() { # void, ( void )
 		*linux*)
 			exec sudo -- "$0" "$ARGV" ;;
 		*openbsd*)
-			exec doas -- "$0" "$ARGV" ;;
+			exec doas "$0" "$ARGV" ;;
 		*)
 			return 1 ;;
 	esac
