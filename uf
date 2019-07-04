@@ -2,62 +2,20 @@
 #http://gitlab.com/morgaux/bin
 
 #
-# Execute apropriate ufetch, depends on ufetch-* in ~/src/ufetch
+# Execute appropriate ufetch
 #
 
-UFDIR="$HOME/src/ufetch"
-UFREPO="https://gitlab.com/jschx/ufetch"
-OSDETAILS="$(cat /etc/*release*)"
-OSLIST=""
+OS_DETAILS="$(uname -a)"
+for i in /etc/*release*
+do
+	[ -f "$i" ] && OS_DETAILS="$(cat /etc/*release*)"
+	break
+done
 
-mkdir -p "$(dirname $UFDIR)"
-
-if [ ! -d "$UFDIR" ]
+if [ ! -d "$HOME/.ufetch" ]
 then
-	[ -x "$(command -v git)" ] || {
-		echo "Cannot clone ufetch, git missing or not found" 1>&2
-		exit 1
-	}
-
-	echo "ufetch not installed, cloning $UFREPO" 1>&2
-	echo "$(git clone "$UFREPO" "$UFDIR")" 1>&2
+	git clone "https://gitlab.com/jschx/ufetch" ~/.ufetch >/dev/null 2>&1 || exit 1
 fi
 
-os_list() {
-	echo "$(\
-			for OS in \
-				$(echo "${UFDIR}/ufetch-"* | \
-					tr ' -' '\n ' | \
-					grep -v png | \
-					awk '{print $2}'); \
-			do \
-				if echo "$@" | grep -q -i "$OS"; \
-				then \
-					echo "$(echo "$@" | \
-						tr ' ' '\n' | \
-						grep -i $OS | \
-						wc -l):$OS"; \
-				fi \
-			done\
-		)"
-}
-
-if [ -n "$OSDETAILS" ]
-then
-	OS_LIST="$(os_list "$OSDETAILS")"
-else
-	OS_LIST="$(os_list "$(uname -a)")"
-fi
-
-if [ -z "$OS_LIST" ]
-then
-	echo "no ufetch selected" 1>&2
-	exit 1
-fi
-
-exec "${UFDIR}/ufetch-$(echo "$OS_LIST" | \
-	sort -r -n | \
-	head -1 | \
-	tr ':' ' ' | \
-	awk '{print $2}')"
+cd "$HOME/.ufetch" && exec "./ufetch-$(for OS in $(echo "ufetch-"* | tr ' -.' '\n  ' | awk '{print $2}'); do if echo "$OS_DETAILS" | grep -q -i "$OS"; then echo "$(echo "$OS_DETAILS" | tr ' ' '\n' | grep -i -c "$OS"):$OS"; fi done | sort -r -n | head -1 | tr ':' ' ' | awk '{print $2}')"
 
