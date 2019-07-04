@@ -2,7 +2,7 @@
 # http://gitlab.com/morgaux/bin
 
 #
-# lauch mincraft
+# larch mincraft
 #
 
 java -jar ~/.minecraft/launcher.jar
