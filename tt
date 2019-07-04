@@ -5,9 +5,9 @@
 # open a tabbed st instance
 #
 
-hasX && \
-	[ -x "$(command -v st)" ] && \
-	[ -x "$(command -v tabbed)" ] || \
+hasX &&
+	[ -x "$(command -v st)" ] &&
+	[ -x "$(command -v tabbed)" ] ||
 	exit 1
 
 tabbed -c -k -r 2 st -w '' -t 'st' "$@"
