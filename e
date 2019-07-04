@@ -2,10 +2,14 @@
 #http://gitlab.com/morgaux/bin
 
 #
-# Edit a file with the prefered editor
+# Edit a file with the preferred editor
 #
 
-[ -n "$EDITOR" ] || err "EDITOR not set" || exit 1
-
-env "$EDITOR" "$@"
+if [ -x "$EDITOR" ]
+then
+	env "$EDITOR" "$@"
+else
+	echo "$(basename "$0"): error: no valid editor set" 1>&2
+	exit 1
+fi
 
