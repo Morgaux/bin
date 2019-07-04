@@ -4,14 +4,17 @@
 
 # floating st wrapper for dwm
 
-[ -x "$(command -v st)" ] || exit 1
 
 FST_CLASS="floating-st"
 
-if [ -x "$(command -v hacksaw)" ] && [ -x "$(command -v tabbed)" ]
-then
-	exec tabbed -n "$FST_CLASS" -c -g "$(hacksaw)" -r 2 st -w '' &
-else
-	exec st -c "$FST_CLASS" &
-fi
+[ -x "$(command -v st)" ] &&
+	if [ -x "$(command -v hacksaw)" ] &&
+		[ -x "$(command -v tabbed)" ]
+	then
+		( tabbed -n "$FST_CLASS" -c -g "$(hacksaw)" -r 2 st -w '' &)
+	else
+		( st -c "$FST_CLASS" -n "$FST_CLASS" &)
+	fi && exit 0
+
+exit 1
 
