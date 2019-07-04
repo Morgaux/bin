@@ -4,37 +4,25 @@
 # sync local git repo
 ##
 
-for i in git log err
-do
-	[ -x "$(command -v $i)" ] || exit 1
-done
+[ -x "$(command -v git)" ] || exit 1
 
 SELF="$(basename "$0")"
 PIDFILE="$HOME/var/${SELF}.pid"
 CURENT_DIR="$PWD"
 PATH="$HOME/bin:$PATH"
 
-log "$SELF using $PIDFILE as PID file"
-
 if [ -f "$PIDFILE" ] ; then
-	log "PID file found: $(cat "$PIDFILE")"
-	log "checking running proccesses..."
-	ps -p "$(cat "$PIDFILE")" >/dev/null 2>&1 && { err "Process already running" || exit 1; }
-	log "no proccess found, removing PID file."
+	ps -p "$(cat "$PIDFILE")" >/dev/null 2>&1 && exit 1
 	rm "$PIDFILE"
 fi
 
-log "creating PID file"
-echo "$$" > "$PIDFILE" || err "Could not create PID file" || exit 1
+echo "$$" > "$PIDFILE" || exit 1
 
 ##
 #
 # Begin daemonizable code
 #
 ##
-
-log "checking dependencies..."
-[ -x "$(command -v git)" ] || err "git is not installed" || exit 1
 
 usage() {
 	echo "$SELF - sync your git repos"
@@ -43,9 +31,9 @@ usage() {
 	echo "	$SELF [OPTIONS] PATH ..."
 	echo ""
 	echo "PATH:"
-	echo "	A vaild path to a valid git repository. One or more may"
+	echo "	A valid path to a valid git repository. One or more may"
 	echo "	be given separated by spaces. Paths are assumed to be"
-	echo "	relavite to './' but may be given as absolute, '/' for"
+	echo "	relative to './' but may be given as absolute, '/' for"
 	echo "	root and '~/' for \$HOME"
 	echo ""
 	echo "OPTIONS:"
@@ -55,14 +43,8 @@ usage() {
 }
 
 [ "$#" -gt 0 ] || {
-	log "Assuming curent dir as repo path."
-	log "Removing old PIDFILE"
-	rm "$PIDFILE" || err "Could not remove old PIDFILE" || exit 1
-	log "Running '$SELF ./'"
-	$0 . || err "Error occured in recursive call."
-	log "Completed with exit code $?"
-	log "Exiting."
-	exit 0
+	rm "$PIDFILE" || exit 1
+	exec $0 .
 }
 
 while [ "$#" -gt 0 ] ; do
@@ -75,17 +57,14 @@ while [ "$#" -gt 0 ] ; do
 	esac
 	shift
 
-	[ -d "$REPO/.git" ] || err "$REPO is not a valid repository" || continue
-	log "entering $REPO..."
+	[ -d "$REPO/.git" ] || continue
 	cd "$REPO" || cd "$CURENT_DIR" || exit 2
 	URL="$(git config --get remote.origin.url)"
 	REMOTE="$(git ls-remote "$URL" HEAD | awk '{print $1}')"
 	LOCAL="$(git rev-parse HEAD)"
-	[ "$REMOTE" = "$LOCAL" ] && log "remote head and local match" && continue
-	git pull || err "could not complete pull"
-	log "$(git log --oneline -n 1)"
+	[ "$REMOTE" = "$LOCAL" ] && continue
+	git pull
 	cd "$CURENT_DIR" || exit 1
-	log "exiting $REPO..."
 done
 
 ##
@@ -95,7 +74,7 @@ done
 ##
 
 log "done, removing PID file"
-rm "$PIDFILE" || err "could not remove PID file" || exit 1
+rm "$PIDFILE" || exit 1
 
 exit 0
 
