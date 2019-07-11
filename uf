@@ -5,17 +5,37 @@
 # Execute appropriate ufetch
 #
 
-OS_DETAILS="$(uname -a)"
 for i in /etc/*release*
 do
 	[ -f "$i" ] && OS_DETAILS="$(cat /etc/*release*)"
 	break
 done
 
-if [ ! -d "$HOME/.ufetch" ]
-then
-	git clone "https://gitlab.com/jschx/ufetch" ~/.ufetch >/dev/null 2>&1 || exit 1
-fi
+[ -n "$OS_DETAILS" ] || OS_DETAILS="$(uname -a)"
+[ -d "$HOME/.ufetch" ] ||
+	git clone "https://gitlab.com/jschx/ufetch" ~/.ufetch >/dev/null 2>&1 ||
+	exit 1
 
-cd "$HOME/.ufetch" && exec "./ufetch-$(for OS in $(echo "ufetch-"* | tr ' -.' '\n  ' | awk '{print $2}'); do if echo "$OS_DETAILS" | grep -q -i "$OS"; then echo "$(echo "$OS_DETAILS" | tr ' ' '\n' | grep -i -c "$OS"):$OS"; fi done | sort -r -n | head -1 | tr ':' ' ' | awk '{print $2}')"
+exec "$HOME/.ufetch/ufetch-$(\
+	for OS in $(\
+		echo "$HOME/.ufetch/ufetch-"* | \
+		tr ' -.' '\n  ' | \
+		awk '{print $3}'\
+	); \
+	do \
+		if echo "$OS_DETAILS" | \
+			grep -q -i "$OS"; \
+		then \
+			echo "$(\
+				echo "$OS_DETAILS" | \
+				tr ' ' '\n' | \
+				grep -i -c "$OS"\
+			):$OS"; \
+		fi \
+	done | \
+	sort -r -n | \
+	head -1 | \
+	tr ':' ' ' | \
+	awk '{print $2}'\
+)"
 
