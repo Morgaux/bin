@@ -5,6 +5,11 @@
 # Execute or install neofetch
 #
 
+# Exec
+[ -x "$(command -v neofetch)" ] && exec neofetch
+
+# Install
+
 VERURL="https://github.com/dylanaraps/neofetch/releases/latest"
 
 if [ ! "$(head -n 1 "$HOME/.neofetch" 2>/dev/null | cut -c -2)" = "#!" ]
