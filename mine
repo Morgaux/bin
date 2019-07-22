@@ -5,5 +5,5 @@
 # larch mincraft
 #
 
-java -jar ~/.minecraft/launcher.jar
+java -jar "$HOME/.minecraft/launcher.jar"
 
