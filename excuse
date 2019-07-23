@@ -4,12 +4,9 @@
 # Get an excuse for an error message
 #
 
-URL="http://developerexcuses.com"
-
 {
-	w3m -dump "$URL" 2>/dev/null || {
+	w3m -dump "http://developerexcuses.com" 2>/dev/null || {
 		echo "Error: could not get excuse." 1>&2
 		exit 1
 	}
 } | grep -v Copyright | tr -s '\n ' | cut -c 2-
-
