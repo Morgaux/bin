@@ -6,8 +6,8 @@
 #
 
 hasX &&
-	[ -x "command -v scrot" ] &&
-	[ -x "command -v xdg-user-dir" ] ||
+	[ -x "$(command -v scrot)" ] &&
+	[ -x "$(command -v xdg-user-dir)" ] ||
 	exit 1
 
 SAVE_DIR="$(xdg-user-dir PICTURES)/Screenshots/"
