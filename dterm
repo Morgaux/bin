@@ -21,33 +21,20 @@
 # Configuration
 
 [ -n "$DSCROLL"   ] || DSCROLL="10"
-[ -n "$DPROMPT"   ] || DPROMPT="dterm \$"
-
-[ -n "$COL_NRMBG" ] || COL_NRMBG="#222222"
-[ -n "$COL_SELBG" ] || COL_SELBG="#005577"
-[ -n "$COL_NRMFG" ] || COL_NRMFG="#bbbbbb"
-[ -n "$COL_SELFG" ] || COL_SELFG="#eeeeee"
-
-[ -n "$DFLAGS"    ] || DFLAGS="-i"
-DFLAGS="${DFLAGS}      -l  ${DSCROLL}"
-DFLAGS="${DFLAGS}      -p  ${DPROMPT}"
-DFLAGS="${DFLAGS}      -nb ${COL_NRMBG}"
-DFLAGS="${DFLAGS}      -nf ${COL_NRMFG}"
-DFLAGS="${DFLAGS}      -sb ${COL_SELBG}"
-DFLAGS="${DFLAGS}      -sf ${COL_SELFG}"
-
+[ -n "$DPROMPT"   ] || DPROMPT="$(echo "${PWD/$HOME/'~'}") \$"
 
 # Main
 
 [ -x "$(command -v dmenu)" ] || exit 1
 
 # truncate history
-tail -n "$DHISTSIZE" "$(echo "$DHISTFILE")" > "$DHISTFILE"
+TMP_HIST="$(tail -n "$DHISTSIZE" "$DHISTFILE")"
+echo "$TMP_HIST" > "$DHISTFILE"
 
 # run dmenu and cmd into shell
 tail -n "$DSCROLL" "$DHISTFILE" | \
 	sort -r | \
-	dmenu "$DFLAGS" | \
+	dmenu -l "${DSCROLL}" -p "${DPROMPT}" "$@" | \
 	tee -a "$DHISTFILE" | \
 	"${SHELL:-"/bin/sh"}" &
 
