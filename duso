@@ -10,11 +10,11 @@
 # Oracle
 #
 
-FLAGS="-p '[duso] password for ${USER}:'"
+FLAGS=""
 
-while [ "${#}" -gt 0 ]
+while [ "$#" -gt 0 ]
 do
-	case "${1}" in
+	case "$1" in
 		-*) # looks like an argument
 			FLAGS="${FLAGS} ${1}" ;;
 		*)  # looks like a command
@@ -23,5 +23,5 @@ do
 	shift
 done
 
-echo "" | dmenu "${FLAGS}" | sudo -S "${@}"
+echo '' | dmenu -p "[duso] password for ${USER}:" | sudo -S "$@"
 
