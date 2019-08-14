@@ -1,0 +1,27 @@
+#!/bin/sh
+
+
+#
+# duso - pronounced "do so", a dmenu sudo frontend
+#
+# Dynamic
+# User
+# Substitution
+# Oracle
+#
+
+FLAGS="-p '[duso] password for ${USER}:'"
+
+while [ "${#}" -gt 0 ]
+do
+	case "${1}" in
+		-*) # looks like an argument
+			FLAGS="${FLAGS} ${1}" ;;
+		*)  # looks like a command
+			break ;;
+	esac
+	shift
+done
+
+echo "" | dmenu "${FLAGS}" | sudo -S "${@}"
+
