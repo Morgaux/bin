@@ -10,3 +10,4 @@
 		exit 1
 	}
 } | grep -v Copyright | tr -s '\n ' | cut -c 2-
+

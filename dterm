@@ -4,6 +4,7 @@
 # dmenu based dropdown terminal
 #
 
+[ -x "$(command -v dmenu)" ] || exit 1
 
 # Environment setup
 
@@ -24,8 +25,6 @@
 [ -n "$DPROMPT"   ] || DPROMPT="$(echo "${PWD/$HOME/'~'}") \$"
 
 # Main
-
-[ -x "$(command -v dmenu)" ] || exit 1
 
 # truncate history
 TMP_HIST="$(tail -n "$DHISTSIZE" "$DHISTFILE")"
