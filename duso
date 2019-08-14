@@ -1,27 +1,37 @@
 #!/bin/sh
 
-
 #
 # duso - pronounced "do so", a dmenu sudo frontend
 #
 # Dynamic
 # User
 # Substitution
-# Oracle
+# Order
 #
 
+[ -x "$(command -v dmenu)" ] || exit 1
+
 FLAGS=""
+
+if dmenu -P -v >/dev/null 2>&1 # if password patch installed
+then
+	FLAGS="${FLAGS} -P" # password mode
+fi
 
 while [ "$#" -gt 0 ]
 do
 	case "$1" in
-		-*) # looks like an argument
-			FLAGS="${FLAGS} ${1}" ;;
-		*)  # looks like a command
-			break ;;
+		'-v'|'-b'|'-f'|'-i')
+			true ;; # do nothing, these flags should go to dmenu
+		'-l'|'-m'|'-p'|'-fn'|'-nb'|'-nf'|'-sb'|'-sf'|'-w')
+			FLAGS="${FLAGS} $1" # these flags also go to dmenu
+			shift ;; # ...but they have an additional argument
+		*) break ;; # looks like the start of the command
 	esac
+	FLAGS="${FLAGS} $1"
 	shift
 done
 
-echo '' | dmenu -p "[duso] password for ${USER}:" | sudo -S "$@"
+# shellcheck disable=SC2086
+echo '' | dmenu -p "[duso] password for ${USER}:" ${FLAGS} | sudo -S "$@"
 
