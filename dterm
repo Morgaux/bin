@@ -12,7 +12,7 @@
 [ -n "$DHOME"     ] || export DHOME="${HOME}/.dterm/"
 [ -n "$DCONFFILE" ] || export DCONFFILE="${HOME}/.dtermrc"
 [ -n "$DHISTFILE" ] || export DHISTFILE="${DHOME}/history.dterm"
-[ -n "$DHISTSIZE" ] || export DHISTSIZE="50"
+[ -n "$DHISTSIZE" ] || export DHISTSIZE="500"
 
 [ -d "$DHOME"     ] || mkdir -p "$DHOME"
 [ -f "$DCONFILE"  ] || touch "$DCONFFILE"
@@ -21,7 +21,7 @@
 
 # Configuration
 
-[ -n "$DSCROLL"   ] || DSCROLL="10"
+[ -n "$DSCROLL"   ] || DSCROLL="50"
 [ -n "$DPROMPT"   ] || DPROMPT="$(echo "${PWD/$HOME/'~'}") \$"
 
 # Main
@@ -31,8 +31,7 @@ TMP_HIST="$(tail -n "$DHISTSIZE" "$DHISTFILE")"
 echo "$TMP_HIST" > "$DHISTFILE"
 
 # run dmenu and cmd into shell
-tail -n "$DSCROLL" "$DHISTFILE" | \
-	awk '{a[i++]=$0} END {for (j=i-1; j>=0;) print a[j--] }' | \
+awk '{a[i++]=$0} END {for (j=i-1; j>=0;) print a[j--] }' < "$DHISTFILE" | \
 	dmenu -l "${DSCROLL}" -p "${DPROMPT}" "$@" | \
 	tee -a "$DHISTFILE" | \
 	"${SHELL:-"/bin/sh"}" &
