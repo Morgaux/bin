@@ -32,7 +32,7 @@ echo "$TMP_HIST" > "$DHISTFILE"
 
 # run dmenu and cmd into shell
 tail -n "$DSCROLL" "$DHISTFILE" | \
-	sort -r | \
+	awk '{a[i++]=$0} END {for (j=i-1; j>=0;) print a[j--] }'
 	dmenu -l "${DSCROLL}" -p "${DPROMPT}" "$@" | \
 	tee -a "$DHISTFILE" | \
 	"${SHELL:-"/bin/sh"}" &
