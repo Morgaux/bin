@@ -15,8 +15,8 @@
 [ -n "$DHISTSIZE" ] || export DHISTSIZE="500"
 
 [ -d "$DHOME"     ] || mkdir -p "$DHOME"
-[ -f "$DCONFILE"  ] || touch "$DCONFFILE"
-[ -f "$DHISTILE"  ] || touch "$DHISTFILE"
+[ -f "$DCONFFILE" ] || touch "$DCONFFILE"
+[ -f "$DHISTFILE" ] || touch "$DHISTFILE"
 
 
 # Configuration
