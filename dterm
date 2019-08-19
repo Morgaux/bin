@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck disable=SC2068
 
 #
 # dmenu based dropdown terminal
@@ -27,12 +28,17 @@
 # Main
 
 # truncate history
-TMP_HIST="$(tail -n "$DHISTSIZE" "$DHISTFILE")"
-echo "$TMP_HIST" > "$DHISTFILE"
+tail -n "${DHISTSIZE}" "${DHISTFILE}.tmp" > "${DHISTFILE}"
 
 # run dmenu and cmd into shell
 awk '{a[i++]=$0} END {for (j=i-1; j>=0;) print a[j--] }' < "$DHISTFILE" | \
-	dmenu -l "${DSCROLL}" -p "${DPROMPT}" "$@" | \
-	tee -a "$DHISTFILE" | \
+
+	# run history through dmenu
+	dmenu -l "${DSCROLL}" -p "${DPROMPT}" $@ | \
+
+	# put selection in the history file
+	tee -a "${DHISTFILE}.tmp" | \
+
+	# run selection through the shell
 	"${SHELL:-"/bin/sh"}" &
 
