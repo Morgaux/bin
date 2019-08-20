@@ -34,7 +34,7 @@ tail -n "${DHISTSIZE}" "${DHISTFILE}.tmp" > "${DHISTFILE}"
 awk '{a[i++]=$0} END {for (j=i-1; j>=0;) print a[j--] }' < "$DHISTFILE" | \
 
 	# run history through dmenu
-	dmenu -l "${DSCROLL}" -p "${DPROMPT}" $@ | \
+	dmenu -l "${DSCROLL}" -p "${DPROMPT}" "$@" | \
 
 	# put selection in the history file
 	tee -a "${DHISTFILE}.tmp" | \
