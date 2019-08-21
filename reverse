@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# vi: syntax=awk
+
+true + /; exec awk -f "$0" -- "$@"; exit; / {}
+
+{a[i++]=$0} END {for (j=i-1; j>=0;) print a[j--] }
+
