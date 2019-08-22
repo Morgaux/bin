@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# dmenu youtube search
+
+${BROWSER:-"$(which firefox)"} "https://www.youtube.com/results?search_query=$(dmenu -p "YouTube: " $@ < "$HOME/.dyt.hist" | sed 's/ /\%20/g' | tee -a "$HOME/.dyt.hist")"
+
