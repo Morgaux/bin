@@ -1,17 +1,13 @@
 #!/bin/sh
-#http://gitlab.com/morgaux/bin
+# shellcheck disable=SC2068
 
 #
-# slmenu based browser searcher / launcher
+# dmenu based browser searcher / launcher
 #
 
-SEARCH_URL="http://duckduckgo.com/?q="
-BROWSER_CMD="$(which w3m)"
-BROWSER_FLAGS="-o meta_refresh=1"
+[ -x "$(command -v dmenu)" ] || exit 1
 
-[ -x "$(command -v slmenu)" ] && [ -x "$BROWSER_CMD" ] || exit 1
+HIST="$(cat "$HOME/.dweb.hist")"
 
-sh -c "${BROWSER_CMD} ${BROWSER_FLAGS} ${SEARCH_URL}$(\
-	if [ "$#" -gt 0 ] ; then echo "$@" ; \
-	else echo "" | slmenu -i -l 5 -p 'search:' ; fi | sed 's/ /%20/g')"
+${BROWSER:-"$(command -v firefox)"} "http://duckduckgo.com/?q=$(echo "$HIST" | dmenu -p "Web Search:" $@ | sed 's/ /%20/g' | tee -a "$HOME/.dweb.hist")"
 
