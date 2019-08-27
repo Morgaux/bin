@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck disable=SC2005
 #http://gitlab.com/morgaux/bin
 
 #

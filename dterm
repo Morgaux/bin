@@ -23,7 +23,7 @@
 # Configuration
 
 [ -n "$DSCROLL"   ] || DSCROLL="50"
-[ -n "$DPROMPT"   ] || DPROMPT="$(echo "${PWD/$HOME/'~'}") \$"
+[ -n "$DPROMPT"   ] || DPROMPT="$(echo "${PWD} \$" | sed -e "s/""$(echo "$HOME" | sed -e 's/\//\\\//g')""/~/g")"
 
 # Main
 

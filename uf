@@ -1,4 +1,6 @@
 #!/bin/sh
+# shellcheck disable=SC2026
+
 #http://gitlab.com/morgaux/bin
 
 #

@@ -4,7 +4,7 @@ COUNT="3"
 
 [ "$#" -gt 0 ] && while sh -c "$*" && exit 0 || [ "$COUNT" -gt 0 ]
 do
-	COUNT="$(($COUNT - 1))"
+	COUNT="$((COUNT - 1))"
 done
 
 exit 1
