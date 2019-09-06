@@ -2,11 +2,17 @@
 #http://gitlab.com/morgaux/bin
 
 #
-# slmenu based man page searcher
+# dmenu based man page searcher
 #
 
-[ -x "$(command -v slmenu)" ] || exit 1
-[ "$#" -gt 0 ] && SEARCH="$*" || SEARCH="."
+[ -x "$(command -v dmenu)" ] &&
+[ -x "$(command -v st   )" ] || exit 1
 
-man "$(man -k "$SEARCH" | awk '{print $1}' | slmenu -i -l 15 -p 'dman:')"
+st -e man "$( \
+	man -k "$( \
+		echo "" | dmenu -p 'dman search:' "$@" \
+	)" | \
+	awk '{print $1}' | \
+	dmenu -i -p 'dman page:' "$@" \
+)"
 
