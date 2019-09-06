@@ -1,0 +1,12 @@
+#!/bin/sh
+
+awk '{print $0}' | \
+	sed -e 's/[{}]/''/g' | \
+	if [ "$#" -gt 0 ]
+	then
+		grep "$@" | awk '{$1 = ""; print $0}' # search
+	else
+		cat # just pass through
+	fi | \
+	sed 's/^[ \t]*//;s/,*$//g'
+
