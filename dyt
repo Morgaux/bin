@@ -3,7 +3,7 @@
 
 # dmenu youtube search
 
-HIST="$(cat "$HOME/.dyt.hist")"
+HIST="$(cat "$HOME/.$(basename "$0").hist")"
 
-${BROWSER:-"$(command -v firefox)"} "https://www.youtube.com/results?search_query=$(echo "$HIST" | dmenu -p "YouTube: " $@ | sed 's/ /\%20/g' | tee -a "$HOME/.dyt.hist")"
+[ -x "$(command -v dmenu)" ] && ${BROWSER:-"$(command -v firefox)"} "https://www.youtube.com/results?search_query=$(echo "$HIST" | dmenu -p "YouTube: " $@ | sed 's/ /\%20/g' | tee -a "$HOME/.dyt.hist")"
 
