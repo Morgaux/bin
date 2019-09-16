@@ -18,7 +18,7 @@ done
 	git clone "https://gitlab.com/jschx/ufetch" ~/.ufetch >/dev/null 2>&1 ||
 	exit 1
 
-exec "$HOME/.ufetch/ufetch-$(\
+TERM=xterm exec "$HOME/.ufetch/ufetch-$(\
 	for OS in $(\
 		echo "$HOME/.ufetch/ufetch-"* | \
 		tr ' -.' '\n  ' | \
