@@ -2,19 +2,19 @@
 
 # Usage check
 usage() {
-echo "	SCP - Fetch Secure Contain Protect Foundation Documents"
-echo "	usage: SCP [ OPTIONS ... ] DOCUMENT"
-echo "	options:"
-echo "		-h	--help	show this message"
-echo "		-l	--less	show document in less instead of stdout"
-echo "		-s	--save	save document locally"
-echo "	"
-echo "	DOCUMENT  is  the  SCP-ID  of  the document to display. It may be"
-echo "	either a valid SCP ID, 'all' or  'ALL'.  A  valid ID is a decimal"
-echo "	number of three or more digits corecponding  to  an SCP Document,"
-echo "	SCP IDs less than 1000 (one thousand) should have the appropriate"
-echo "	number of 0s (zeros) prepended."
-exit 0
+	echo "	SCP - Fetch Secure Contain Protect Foundation Documents"
+	echo "	usage: SCP [ OPTIONS ... ] DOCUMENT"
+	echo "	options:"
+	echo "		-h	--help	show this message"
+	echo "		-l	--less	show document in less instead of stdout"
+	echo "		-s	--save	save document locally"
+	echo "	"
+	echo "	DOCUMENT  is  the  SCP-ID  of  the document to display. It may be"
+	echo "	either a valid SCP ID, 'all' or  'ALL'.  A  valid ID is a decimal"
+	echo "	number of three or more digits corecponding  to  an SCP Document,"
+	echo "	SCP IDs less than 1000 (one thousand) should have the appropriate"
+	echo "	number of 0s (zeros) prepended."
+	exit 0
 }
 
 [ $# -gt 0 ] || usage
