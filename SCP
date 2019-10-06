@@ -1,8 +1,7 @@
 #!/bin/sh
 
 # Usage check
-usage()
-{
+usage() {
 echo "	SCP - Fetch Secure Contain Protect Foundation Documents"
 echo "	usage: SCP [ OPTIONS ... ] DOCUMENT"
 echo "	options:"
@@ -26,27 +25,23 @@ LESSDOC="FALSE"
 SAVEDOC="FALSE"
 
 # Functions
-fetchDocument()
-{
+fetchDocument() {
 	# download formated document and cut pre and post
 	lynx -dump "http://scp-wiki.wikidot.com/scp-$1" | sed -n '/IFRAME/,$p' | tail -n +4 | sed -n '/page revision/q;p'
 }
 
-getDocumentSCP()
-{
+getDocumentSCP() {
 	# if save TRUE fetch to file in DOCPATH
 	# if save TRUE cat file else fetch
 	# if less TRUE cat/fetch and pipe through less
 	fetchDocument $1
 }
 
-readDocumentSCP()
-{
+readDocumentSCP() {
 	espeak -f scp-$1 -w scp-$1.wav
 }
 
-showDocumentSCP()
-{
+showDocumentSCP() {
 	#[ -d "$DOCPATH" ] || mkdir -p "$DOCPATH"
 
 	case "$1" in
@@ -61,8 +56,7 @@ showDocumentSCP()
 	esac
 }
 
-getAllDocumentIds()
-{
+getAllDocumentIds() {
 	# outer loop, nest at will
 	for l in "" 1 2 3 4 5 6 7 8 9; do
 
@@ -78,8 +72,7 @@ getAllDocumentIds()
 	done
 }
 
-main()
-{
+main() {
 	while [ $# -gt 0 ] ; do
 		case $1 in
 			-h|--help)
