@@ -1,0 +1,106 @@
+#!/bin/sh
+
+# Usage check
+usage()
+{
+echo "	SCP - Fetch Secure Contain Protect Foundation Documents"
+echo "	usage: SCP [ OPTIONS ... ] DOCUMENT"
+echo "	options:"
+echo "		-h	--help	show this message"
+echo "		-l	--less	show document in less instead of stdout"
+echo "		-s	--save	save document locally"
+echo "	"
+echo "	DOCUMENT  is  the  SCP-ID  of  the document to display. It may be"
+echo "	either a valid SCP ID, 'all' or  'ALL'.  A  valid ID is a decimal"
+echo "	number of three or more digits corecponding  to  an SCP Document,"
+echo "	SCP IDs less than 1000 (one thousand) should have the appropriate"
+echo "	number of 0s (zeros) prepended."
+exit 0
+}
+
+[ $# -gt 0 ] || usage
+
+# Declarations
+DOCPATH="$HOME/Documents/SCP"
+LESSDOC="FALSE"
+SAVEDOC="FALSE"
+
+# Functions
+fetchDocument()
+{
+	# download formated document and cut pre and post
+	lynx -dump "http://scp-wiki.wikidot.com/scp-$1" | sed -n '/IFRAME/,$p' | tail -n +4 | sed -n '/page revision/q;p'
+}
+
+getDocumentSCP()
+{
+	# if save TRUE fetch to file in DOCPATH
+	# if save TRUE cat file else fetch
+	# if less TRUE cat/fetch and pipe through less
+	fetchDocument $1
+}
+
+readDocumentSCP()
+{
+	espeak -f scp-$1 -w scp-$1.wav
+}
+
+showDocumentSCP()
+{
+	#[ -d "$DOCPATH" ] || mkdir -p "$DOCPATH"
+
+	case "$1" in
+		"all"|"ALL")
+			for ID in $(getAllDocumentIds); do
+				getDocumentSCP $ID
+			done
+			;;
+		*)
+			getDocumentSCP $1
+			;;
+	esac
+}
+
+getAllDocumentIds()
+{
+	# outer loop, nest at will
+	for l in "" 1 2 3 4 5 6 7 8 9; do
+
+		# inner loop, 0 padded to 3 digits
+		for k in 0 1 2 3 4 5 6 7 8 9; do
+			for j in 0 1 2 3 4 5 6 7 8 9; do
+				for i in 0 1 2 3 4 5 6 7 8 9; do
+					echo "$l$k$j$i"
+				done
+			done
+		done | tail -n+2
+
+	done
+}
+
+main()
+{
+	while [ $# -gt 0 ] ; do
+		case $1 in
+			-h|--help)
+				shift
+				usage
+				;;
+			-l|--less)
+				shift
+				LESSDOC="TRUE"
+				;;
+			-s|--save)
+				shift
+				SAVEDOC="TRUE"
+				;;
+			*)
+				showDocumentSCP "$1"
+				shift
+				;;
+		esac
+	done
+}
+
+main "$@"
+
