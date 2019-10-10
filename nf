@@ -24,5 +24,5 @@ then
 	[ -x "$(command -v curl)" ] && curl -s "$SRCURL" 2>/dev/null > "$HOME/.neofetch" || exit 1
 fi
 
-chmod 755 "$HOME/.neofetch" && exec "$HOME/.neofetch"
+chmod 755 "$HOME/.neofetch" && exec "$HOME/.neofetch" $@
 
