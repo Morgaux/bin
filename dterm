@@ -5,7 +5,11 @@
 # dmenu based dropdown terminal
 #
 
-[ -x "$(command -v dmenu)" ] || exit 1
+if [ -x "$(command -v dmenu)" ]
+then
+	echo "$(basename "$0"): error: dmenu is not installed." 1>&2
+	exit 1
+fi
 
 # Environment setup
 
@@ -32,6 +36,9 @@ tail -n "${DHISTSIZE}" "${DHISTFILE}.tmp" > "${DHISTFILE}"
 
 # run dmenu and cmd into shell
 awk '{a[i++]=$0} END {for (j=i-1; j>=0;) print a[j--] }' < "$DHISTFILE" | \
+
+	# remove duplicates
+	uniq -iu | \
 
 	# run history through dmenu
 	dmenu -l "${DSCROLL}" -p "${DPROMPT}" "$@" | \
