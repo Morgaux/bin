@@ -12,7 +12,7 @@ do
 		continue
 	fi
 
-	echo "$(basename "$0"): error: $dependancy is not installed."
+	echo "$(basename "$0"): error: $dependancy is not installed." 1>&2
 	exit 1
 done
 
