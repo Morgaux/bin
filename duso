@@ -9,7 +9,11 @@
 # Order
 #
 
-[ -x "$(command -v dmenu)" ] || exit 1
+if [ -x "$(command -v dmenu)" ]
+then
+	echo "$(basename "$0"): error dmenu is not installed" 1>&2
+	exit 1
+fi
 
 FLAGS=""
 
