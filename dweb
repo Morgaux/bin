@@ -16,7 +16,15 @@ do
 	exit 1
 done
 
-HISTFILE="$HOME/.dweb.hist"
+SELF="$(basename "$0")"
+HISTFILE="${HOME}/.${SELF}.hist"
 
-exec surf "http://duckduckgo.com/?q=$(dmenu -p "dweb:" $@ < "$HISTFILE" | tee -a "$HISTFILE" | sed 's/ /%20/g')"
+case "$SELF" in
+	"dyt")
+		URL="https://www.youtube.com/results?search_query=";;
+	*)
+		URL="http://duckduckgo.com/?q=";;
+esac
+
+exec surf "${URL}$(dmenu -p "${SELF}:" $@ < "$HISTFILE" | tee -a "$HISTFILE" | sed 's/ /%20/g')"
 
