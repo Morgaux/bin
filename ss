@@ -7,13 +7,26 @@
 # save a Screen Shot
 #
 
-hasX &&
-	[ -x "$(command -v scrot)" ] &&
-	[ -x "$(command -v xdg-user-dir)" ] ||
+for dependancy in scrot xdg-user-dir
+do
+	if [ -x "$(command -v "$dependancy")" ]
+	then
+		continue
+	fi
+
+	echo "$(basename "$0"): error: $dependancy is not installed." 1>&2
 	exit 1
+done
+
+if ! hasX
+then
+	echo "$(basename "$0"): requires X11" 1>&2
+	exit 1
+fi
 
 SAVE_DIR="$(xdg-user-dir PICTURES)/Screenshots/"
+
 [ -d "$SAVE_DIR" ] || mkdir -p "$SAVE_DIR"
 
-scrot '%s.png' -e "$(echo "mv \$f $SAVE_DIR")" "$@" || exit 2
+scrot '%s.png' -e "$(echo "mv \$f $SAVE_DIR")" $@ || exit 2
 
