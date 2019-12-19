@@ -6,23 +6,46 @@
 # Execute or install neofetch
 #
 
+NEO_FILE="$HOME/.neofetch"
+
 # Exec
-[ -x "$(command -v neofetch)" ] && exec neofetch
+[ -x "$(command -v neofetch)" ] && exec neofetch $@
+[ -f "$NEO_FILE"              ] && exec "$NEO_FILE" $@
 
-# Install
-
-VERURL="https://github.com/dylanaraps/neofetch/releases/latest"
-
-if [ ! "$(head -n 1 "$HOME/.neofetch" 2>/dev/null | cut -c -2)" = "#!" ]
+if [ ! -x "$(command -v wget)" ] || [ ! -x "$(command -v curl)" ]
 then
-	SRCURL="https://raw.githubusercontent.com/dylanaraps/neofetch/$(\
-		echo "$(\
-			[ -x "$(command -v wget)" ] && wget --spider "$VERURL" 2>&1 | grep -i location | tail -1 | awk '{print $2}' || \
-			[ -x "$(command -v curl)" ] && curl -Ls -o /dev/null -w '%{url_effective}' "$VERURL" 2>&1 || exit 1 \
-		)" | grep -o "tag.*" | cut -c 5-)/neofetch"
-	[ -x "$(command -v wget)" ] && wget -O- "$SRCURL" 2>/dev/null > "$HOME/.neofetch" ||
-	[ -x "$(command -v curl)" ] && curl -s "$SRCURL" 2>/dev/null > "$HOME/.neofetch" || exit 1
+	echo "$(basename "$0"): error: at least one of curl or wget must be installed." 1>&2
+	exit 1
 fi
 
-chmod 755 "$HOME/.neofetch" && exec "$HOME/.neofetch" $@
+# Install
+VERURL="https://github.com/dylanaraps/neofetch/releases/latest"
+SRCURL="https://raw.githubusercontent.com/dylanaraps/neofetch"
+
+get_latest_tag() {
+	if [ -x "$(command -v wget)" ]
+	then
+		wget -O /dev/null -S --spider "$VERURL" 2>&1 | awk '/Location/ {print $2}'
+	else
+		curl -Ls -o /dev/null -w "%{url_effective}\n" "$VERURL"
+	fi | tr '/' '\n' | tail -1
+}
+
+get_latest_url() {
+	echo "${SRCURL}/$(get_latest_tag)/neofetch"
+}
+
+download_from() {
+	if [ -x "$(command -v wget)" ]
+	then
+		wget -q -O - "$1"
+	else
+		curl -s "$1"
+	fi
+}
+
+download_from "$(get_latest_url)" > "$NEO_FILE"
+chmod 755 "$NEO_FILE"
+
+exec "$NEO_FILE" $@
 
