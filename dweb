@@ -26,5 +26,7 @@ case "$SELF" in
 		URL="http://duckduckgo.com/?q=";;
 esac
 
+touch "$HISTFILE"
+
 exec surf "${URL}$(dmenu -p "${SELF}:" $@ < "$HISTFILE" | tee -a "$HISTFILE" | sed 's/ /%20/g')"
 
