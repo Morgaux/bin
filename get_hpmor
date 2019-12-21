@@ -27,6 +27,7 @@ generate_all() {
 		110 111 112 113 114 115 116 117 118 119 \
 		120 121 122
 	do
+		echo "Generating chapter $i of 122"
 		generate_chapter "$i" > "${OUT_DIR}/Chapter_${i}.txt"
 	done
 }

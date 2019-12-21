@@ -5,9 +5,26 @@
 # dmenu based browser searcher / launcher
 #
 
-[ -x "$(command -v dmenu)" ] || exit 1
+for dependancy in dmenu surf
+do
+	if [ -x "$(command -v "$dependancy")" ]
+	then
+		continue
+	fi
 
-HIST="$(cat "$HOME/.dweb.hist")"
+	echo "$(basename "$0"): error: $dependancy is not installed." 1>&2
+	exit 1
+done
 
-${BROWSER:-"$(command -v firefox)"} "http://duckduckgo.com/?q=$(echo "$HIST" | dmenu -p "Web Search:" $@ | sed 's/ /%20/g' | tee -a "$HOME/.dweb.hist")"
+SELF="$(basename "$0")"
+HISTFILE="${HOME}/.${SELF}.hist"
+
+case "$SELF" in
+	"dyt")
+		URL="https://www.youtube.com/results?search_query=";;
+	*)
+		URL="http://duckduckgo.com/?q=";;
+esac
+
+exec surf "${URL}$(dmenu -p "${SELF}:" $@ < "$HISTFILE" | tee -a "$HISTFILE" | sed 's/ /%20/g')"
 

@@ -7,18 +7,37 @@
 # Execute appropriate ufetch
 #
 
+if [ ! -x "$(command -v git)" ]
+then
+	echo "$(basename "$0"): error: git is not installed." 1>&2
+	exit 1
+fi
+
 for i in /etc/*release*
 do
-	[ -f "$i" ] && OS_DETAILS="$(cat /etc/*release*)"
-	break
+	if [ -f "$i" ]
+	then
+		OS_DETAILS="$(cat /etc/*release*)"
+		break
+	fi
 done
 
-[ -n "$OS_DETAILS" ] || OS_DETAILS="$(uname -a)"
-[ -d "$HOME/.ufetch" ] ||
-	git clone "https://gitlab.com/jschx/ufetch" ~/.ufetch >/dev/null 2>&1 ||
-	exit 1
+[ -n "$OS_DETAILS" ] || OS_DETAILS="$(uname -a)" # fallback to just uname
 
-TERM=xterm exec "$HOME/.ufetch/ufetch-$(\
+if [ ! -d "$HOME/.ufetch" ]
+then
+	git clone "https://gitlab.com/jschx/ufetch" ~/.ufetch >/dev/null 2>&1
+
+	if [ "$?" -ne 0 ]
+	then
+		echo "$(basename "$0"): error: git clone failed." 1>&2
+		exit 1
+	fi
+fi
+
+
+
+UFETCH="$HOME/.ufetch/ufetch-$(\
 	for OS in $(\
 		echo "$HOME/.ufetch/ufetch-"* | \
 		tr ' -.' '\n  ' | \
@@ -40,4 +59,6 @@ TERM=xterm exec "$HOME/.ufetch/ufetch-$(\
 	tr ':' ' ' | \
 	awk '{print $2}'\
 )"
+
+TERM=xterm exec "$UFETCH"
 

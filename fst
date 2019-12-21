@@ -4,17 +4,18 @@
 
 # floating st wrapper for dwm
 
+for dependancy in st tabbed hacksaw
+do
+	if [ -x "$(command -v "$dependancy")" ]
+	then
+		continue
+	fi
+
+	echo "$(basename "$0"): error: $dependancy is not installed." 1>&2
+	exit 1
+done
 
 FST_CLASS="floating-st"
 
-[ -x "$(command -v st)" ] &&
-	if [ -x "$(command -v hacksaw)" ] &&
-		[ -x "$(command -v tabbed)" ]
-	then
-		( tabbed -n "$FST_CLASS" -c -g "$(hacksaw)" -r 2 st -w '' &)
-	else
-		( st -c "$FST_CLASS" -n "$FST_CLASS" &)
-	fi && exit 0
-
-exit 1
+(tabbed -n "$FST_CLASS" -c -g "$(hacksaw)" -r 2 st -w '' &)
 

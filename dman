@@ -5,8 +5,16 @@
 # dmenu based man page searcher
 #
 
-[ -x "$(command -v dmenu)" ] &&
-[ -x "$(command -v st   )" ] || exit 1
+for dependancy in dmenu st
+do
+	if [ -x "$(command -v "$dependancy")" ]
+	then
+		continue
+	fi
+
+	echo "$(basename "$0"): error: $dependancy is not installed." 1>&2
+	exit 1
+done
 
 st -e man "$( \
 	man -k "$( \

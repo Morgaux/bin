@@ -1,9 +1,0 @@
-#!/bin/sh
-# shellcheck disable=SC2068
-
-# dmenu youtube search
-
-HIST="$(cat "$HOME/.$(basename "$0").hist")"
-
-[ -x "$(command -v dmenu)" ] && ${BROWSER:-"$(command -v firefox)"} "https://www.youtube.com/results?search_query=$(echo "$HIST" | dmenu -p "YouTube: " $@ | sed 's/ /\%20/g' | tee -a "$HOME/.dyt.hist")"
-
