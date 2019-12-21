@@ -28,5 +28,5 @@ esac
 
 touch "$HISTFILE"
 
-exec surf "${URL}$(dmenu -p "${SELF}:" $@ < "$HISTFILE" | tee -a "$HISTFILE" | sed 's/ /%20/g')"
+surf "${URL}$(dmenu -p "${SELF}:" $@ < "$HISTFILE" | tee -a "$HISTFILE" | sed 's/ /%20/g')"
 
