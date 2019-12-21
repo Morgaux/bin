@@ -5,7 +5,7 @@
 # dmenu based dropdown terminal
 #
 
-if [ -x "$(command -v dmenu)" ]
+if [ ! -x "$(command -v dmenu)" ]
 then
 	echo "$(basename "$0"): error: dmenu is not installed." 1>&2
 	exit 1
