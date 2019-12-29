@@ -56,7 +56,7 @@ then
 	SEARCH="."
 fi
 
-RESULT="$(man -k "$SEARCH" | awk '{print $1}')"
+RESULT="$(man -k "$SEARCH" | awk '{print $1}' | uniq)"
 
 if [ "$(echo "$RESULT" | wc -l)" -gt 1 ]
 then
