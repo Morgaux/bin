@@ -53,8 +53,7 @@ fi
 
 if [ -z "$SEARCH" ]
 then
-	err "no SEARCH selected."
-	exit 1
+	SEARCH="."
 fi
 
 RESULT="$(man -k "$SEARCH" | awk '{print $1}')"
