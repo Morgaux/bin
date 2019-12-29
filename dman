@@ -5,6 +5,12 @@
 # dmenu based man page searcher
 #
 
+SELF="$(basename $0)"
+
+err() {
+	echo "${SELF}: error: $@" 1>&2
+}
+
 for dependancy in dmenu st
 do
 	if [ -x "$(command -v "$dependancy")" ]
@@ -12,15 +18,53 @@ do
 		continue
 	fi
 
-	echo "$(basename "$0"): error: $dependancy is not installed." 1>&2
+	err "$dependancy is not installed."
 	exit 1
 done
 
-st -e man "$( \
-	man -k "$( \
-		echo "" | dmenu -p 'dman search:' "$@" \
-	)" | \
-	awk '{print $1}' | \
-	dmenu -i -p 'dman page:' "$@" \
-)"
+FLAGS=""
+
+while [ "$#" -gt 0 ]
+do
+	case "$1" in
+		'-v'|'-b'|'-f'|'-i')
+			# dmenu flag
+			FLAGS="${FLAGS} $1"
+			;;
+		'-l'|'-m'|'-p'|'-fn'|'-nb'|'-nf'|'-sb'|'-sf'|'-w')
+			# dmenu flag with second option
+			FLAGS="${FLAGS} $1"
+			FLAGS="${FLAGS} $2"
+			;;
+		*)
+			# unrecognised option
+			break
+			;;
+	esac
+	shift
+done
+
+if [ "$(echo $@ | wc -w)" -gt 1 ]
+then
+	SEARCH="$(echo "$@" | tr ' ' '\s' | dmenu -p 'dman search:' ${FLAGS})"
+else
+	SEARCH="$@"
+fi
+
+if [ -z "$SEARCH" ]
+then
+	err "no SEARCH selected."
+	exit 1
+fi
+
+RESULT="$(man -k "$SEARCH" | awk '{print $1}')"
+
+if [ "$(echo "$RESULT" | wc -l)" -gt 1 ]
+then
+	QUERRY="$(echo "$RESULT" | dmenu -i -p 'dman page:' ${FLAGS})"
+else
+	QUERRY="$RESULT"
+fi
+
+st -e man "$QUERRY"
 
