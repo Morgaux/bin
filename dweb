@@ -19,6 +19,28 @@ done
 SELF="$(basename "$0")"
 HISTFILE="${HOME}/.${SELF}.hist"
 
+FLAGS=""
+
+while [ "$#" -gt 0 ]
+do
+	case "$1" in
+		'-v'|'-b'|'-f'|'-i')
+			# dmenu flag
+			FLAGS="${FLAGS} $1"
+			;;
+		'-l'|'-m'|'-p'|'-fn'|'-nb'|'-nf'|'-sb'|'-sf'|'-w')
+			# dmenu flag with second option
+			FLAGS="${FLAGS} $1"
+			FLAGS="${FLAGS} $2"
+			;;
+		*)
+			# unrecognised option
+			break
+			;;
+	esac
+	shift
+done
+
 case "$SELF" in
 	"dyt")
 		URL="https://www.youtube.com/results?search_query=";;
@@ -28,5 +50,12 @@ esac
 
 touch "$HISTFILE"
 
-surf "${URL}$(dmenu -p "${SELF}:" $@ < "$HISTFILE" | tee -a "$HISTFILE" | sed 's/ /%20/g')"
+if [ -z "$@" ]
+then
+	SEARCH="$(dmenu -p "${SELF}:" ${FLAGS} < "$HISTFILE")"
+else
+	SEARCH="$@"
+fi
+
+surf "${URL}$(echo "$SEARCH" | tee -a "$HISTFILE" | sed 's/ /%20/g')"
 
