@@ -1,0 +1,60 @@
+#!/bin/sh
+#http://gitlab.com/morgaux/bin
+
+#
+# dmenu/st terminal utility launcher
+#
+
+SELF="$(basename $0)"
+
+err() {
+	echo "${SELF}: error: $@" 1>&2
+}
+
+for dependancy in dmenu st
+do
+	if [ -x "$(command -v "$dependancy")" ]
+	then
+		continue
+	fi
+
+	err "$dependancy is not installed."
+	exit 1
+done
+
+FLAGS=""
+
+while [ "$#" -gt 0 ]
+do
+	case "$1" in
+		'-v'|'-b'|'-f'|'-i')
+			# dmenu flag
+			FLAGS="${FLAGS} $1"
+			;;
+		'-l'|'-m'|'-p'|'-fn'|'-nb'|'-nf'|'-sb'|'-sf'|'-w')
+			# dmenu flag with second option
+			FLAGS="${FLAGS} $1"
+			FLAGS="${FLAGS} $2"
+			;;
+		*)
+			# unrecognised option
+			break
+			;;
+	esac
+	shift
+done
+
+HISTFILE="${HOME}/.${SELF}_hist"
+HISTORY="$(touch "$HISTFILE" && cat "$HISTFILE")"
+APPLICATION="${@:-"$(echo "$HISTORY" | dmenu -p "${SELF}:" ${FLAGS})"}"
+
+if [ -z "$APPLICATION" ]
+then
+	err "no application selected."
+	exit 1
+fi
+
+echo "$APPLICATION" >> "$HISTFILE"
+
+st -e "$APPLICATION"
+
