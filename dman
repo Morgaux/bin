@@ -5,10 +5,10 @@
 # dmenu based man page searcher
 #
 
-SELF="$(basename $0)"
+SELF="$(basename "$0")"
 
 err() {
-	echo "${SELF}: error: $@" 1>&2
+	echo "${SELF}: error: $*" 1>&2
 }
 
 for dependancy in dmenu st
@@ -44,11 +44,12 @@ do
 	shift
 done
 
-if [ "$(echo $@ | wc -w)" -gt 1 ]
+if [ "$(echo "$@" | wc -w)" -gt 1 ]
 then
+	# shellcheck disable=SC2086
 	SEARCH="$(echo "$@" | tr ' ' '\s' | dmenu -p 'dman search:' ${FLAGS})"
 else
-	SEARCH="$@"
+	SEARCH="$*"
 fi
 
 if [ -z "$SEARCH" ]
@@ -60,6 +61,7 @@ RESULT="$(man -k "$SEARCH" | awk '{print $1}' | uniq)"
 
 if [ "$(echo "$RESULT" | wc -l)" -gt 1 ]
 then
+	# shellcheck disable=SC2086
 	QUERRY="$(echo "$RESULT" | dmenu -i -p 'dman page:' ${FLAGS})"
 else
 	QUERRY="$RESULT"
