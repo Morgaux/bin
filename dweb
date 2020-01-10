@@ -18,8 +18,9 @@ done
 
 SELF="$(basename "$0")"
 HISTFILE="${HOME}/.${SELF}.hist"
+HISTSIZE=15
 
-FLAGS=""
+FLAGS="-l ${HISTSIZE}"
 
 while [ "$#" -gt 0 ]
 do
@@ -50,9 +51,15 @@ esac
 
 touch "$HISTFILE"
 
+cp "$HISTFILE" "$HISTFILE".tmp
+tail -n "$HISTSIZE" "$HISTFILE".tmp > "$HISTFILE"
+rm "$HISTFILE".tmp
+
 if [ -z "$@" ]
 then
-	SEARCH="$(dmenu -p "${SELF}:" ${FLAGS} < "$HISTFILE")"
+	SEARCH="$(uniq -i < "$HISTFILE" | \
+		awk '{a[i++]=$0} END {for (j=i-1; j>=0;) print a[j--] }' | \
+		dmenu -p "${SELF}:" ${FLAGS})"
 else
 	SEARCH="$@"
 fi
