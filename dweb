@@ -64,5 +64,12 @@ else
 	SEARCH="$@"
 fi
 
-surf "${URL}$(echo "$SEARCH" | tee -a "$HISTFILE" | sed 's/ /%20/g')"
+case "$SEARCH" in
+	"http://"*|"https"*)
+		surf "$SEARCH";;
+	*)
+		surf "${URL}$(echo "$SEARCH" | \
+			tee -a "$HISTFILE"   | \
+			sed 's/ /%20/g')";;
+esac
 
