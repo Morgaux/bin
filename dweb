@@ -67,6 +67,8 @@ fi
 case "$SEARCH" in
 	"http://"*|"https"*)
 		surf "$SEARCH";;
+	"")
+		exit 1 ;; # nothing selected
 	*)
 		surf "${URL}$(echo "$SEARCH" | \
 			tee -a "$HISTFILE"   | \
