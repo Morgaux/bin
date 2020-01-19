@@ -18,29 +18,6 @@ done
 
 SELF="$(basename "$0")"
 HISTFILE="${HOME}/.${SELF}.hist"
-HISTSIZE=15
-
-FLAGS="-l ${HISTSIZE}"
-
-while [ "$#" -gt 0 ]
-do
-	case "$1" in
-		'-v'|'-b'|'-f'|'-i')
-			# dmenu flag
-			FLAGS="${FLAGS} $1"
-			;;
-		'-l'|'-m'|'-p'|'-fn'|'-nb'|'-nf'|'-sb'|'-sf'|'-w')
-			# dmenu flag with second option
-			FLAGS="${FLAGS} $1"
-			FLAGS="${FLAGS} $2"
-			;;
-		*)
-			# unrecognised option
-			break
-			;;
-	esac
-	shift
-done
 
 case "$SELF" in
 	"dyt")
@@ -49,29 +26,20 @@ case "$SELF" in
 		URL="http://duckduckgo.com/?q=";;
 esac
 
-touch "$HISTFILE"
-
-cp "$HISTFILE" "$HISTFILE".tmp
-tail -n "$HISTSIZE" "$HISTFILE".tmp > "$HISTFILE"
-rm "$HISTFILE".tmp
-
-if [ -z "$@" ]
-then
-	SEARCH="$(uniq -i < "$HISTFILE" | \
-		awk '{a[i++]=$0} END {for (j=i-1; j>=0;) print a[j--] }' | \
-		dmenu -p "${SELF}:" ${FLAGS})"
-else
-	SEARCH="$@"
-fi
+SEARCH="$(uniq -i < "$HISTFILE" | \
+	awk '{a[i++]=$0} END {for (j=i-1; j>=0;) print a[j--] }' | \
+	dmenu -l 100 -p "${SELF}:" $@)"
 
 case "$SEARCH" in
-	"http://"*|"https"*)
-		surf "$SEARCH";;
 	"")
 		exit 1 ;; # nothing selected
+	*"://"*)
+		surf "$(echo "$SEARCH"     | \
+			tee -a "$HISTFILE" | \
+			sed 's/ /%20/g')" ;; # direct URL
 	*)
 		surf "${URL}$(echo "$SEARCH" | \
 			tee -a "$HISTFILE"   | \
-			sed 's/ /%20/g')";;
+			sed 's/ /%20/g')" ;; # search term
 esac
 
