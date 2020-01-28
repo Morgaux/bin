@@ -4,11 +4,9 @@
 # Get an excuse for an error message
 #
 
-if [ ! -x "command -v w3m" ]
-then
-	echo "Error: could not get excuse." 1>&2
-	exit 1
-fi
+set -e
+
+dependencies w3m
 
 w3m -dump "http://developerexcuses.com" 2>/dev/null | grep -v Copyright | tr -s '\n ' | cut -c 2-
 
