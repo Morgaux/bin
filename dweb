@@ -5,28 +5,12 @@
 # dmenu based browser searcher / launcher
 #
 
+set -e
+
+dependencies surf dmenu
+
 SELF="$(basename "$0")"
 HISTFILE="${HOME}/.${SELF}.hist"
-
-err() {
-	echo "${SELF}: $*" 1>&2
-	return 1
-}
-
-die() {
-	err "$@"
-	exit 1
-}
-
-depends_on() {
-	for dependancy in $@
-	do
-		if ! [ -x "$(command -v "$dependancy")" ]
-		then
-			die "$dependancy is not installed."
-		fi
-	done
-}
 
 create_url() {
 	case "$SELF" in 
@@ -50,17 +34,14 @@ get_search() {
 		tee -a "$HISTFILE")"
 	if [ -z "$SEARCH" ]
 	then
-		die "no selection"
+		echo "no selection" 1>&2
+		exit 1
 	fi
 }
 
-main() {
-	depends_on surf dmenu
+get_search $@
 
-	get_search $@
+surf "$(create_url)" &
 
-	surf "$(create_url)"
-}
-
-main $@
+exit 0
 
