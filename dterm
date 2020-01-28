@@ -5,47 +5,44 @@
 # dmenu based dropdown terminal
 #
 
-if [ ! -x "$(command -v dmenu)" ]
-then
-	echo "$(basename "$0"): error: dmenu is not installed." 1>&2
-	exit 1
-fi
+set -e
+
+dependencies dmenu
 
 # Environment setup
-
 [ -n "$DTERM"     ] || export DTERM="dterm"
 [ -n "$DHOME"     ] || export DHOME="${HOME}/.dterm/"
 [ -n "$DCONFFILE" ] || export DCONFFILE="${HOME}/.dtermrc"
 [ -n "$DHISTFILE" ] || export DHISTFILE="${DHOME}/history.dterm"
 [ -n "$DHISTSIZE" ] || export DHISTSIZE="500"
-
 [ -d "$DHOME"     ] || mkdir -p "$DHOME"
 [ -f "$DCONFFILE" ] || touch "$DCONFFILE"
 [ -f "$DHISTFILE" ] || touch "$DHISTFILE"
 
-
 # Configuration
-
 [ -n "$DSCROLL"   ] || DSCROLL="50"
 [ -n "$DPROMPT"   ] || DPROMPT="$(echo "${PWD} \$" | sed -e "s/""$(echo "$HOME" | sed -e 's/\//\\\//g')""/~/g")"
 
 # Main
 
 # truncate history
-tail -n "${DHISTSIZE}" "${DHISTFILE}.tmp" > "${DHISTFILE}"
+tail -n "${DHISTSIZE}" "${DHISTFILE}" > "${DHISTFILE}.tmp"
 
-# run dmenu and cmd into shell
-awk '{a[i++]=$0} END {for (j=i-1; j>=0;) print a[j--] }' < "$DHISTFILE" | \
+# reverse history through pipe
+reverse < "${DHISTFILE}.tmp" | \
 
 	# remove duplicates
 	uniq -iu | \
 
-	# run history through dmenu
+	# pipe through dmenu
 	dmenu -l "${DSCROLL}" -p "${DPROMPT}" "$@" | \
 
 	# put selection in the history file
-	tee -a "${DHISTFILE}.tmp" | \
+	tee -a "${DHISTFILE}" | \
 
 	# run selection through the shell
-	"${SHELL:-"/bin/sh"}" &
+	"${SHELL:-"/bin/sh"}" && \
+
+	# and delete temporary history file on completion
+	rm "${DHISTFILE}.tmp" & # all in the background
 
