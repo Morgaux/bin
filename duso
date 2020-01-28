@@ -9,33 +9,30 @@
 # Order
 #
 
-if [ ! -x "$(command -v dmenu)" ]
-then
-	echo "$(basename "$0"): error dmenu is not installed" 1>&2
-	exit 1
-fi
+set -e
 
-FLAGS=""
+dependencies dmenu sudo
+
+DFLAGS=""
 
 if dmenu -P -v >/dev/null 2>&1 # if password patch installed
 then
-	FLAGS="${FLAGS} -P" # password mode
+	DFLAGS="${DFLAGS} -P" # password mode
 fi
 
 while [ "$#" -gt 0 ]
 do
 	case "$1" in
-		'-v'|'-b'|'-f'|'-i')
-			true ;; # do nothing, these flags should go to dmenu
-		'-l'|'-m'|'-p'|'-fn'|'-nb'|'-nf'|'-sb'|'-sf'|'-w')
-			FLAGS="${FLAGS} $1" # these flags also go to dmenu
-			shift ;; # ...but they have an additional argument
-		*) break ;; # looks like the start of the command
+	'-b'|'-f'|'-i'|'-v')
+		DFLAGS="$DFLAGS $1" ;;
+	'-l'|'-m'|'-p'|'-fn'|'-nb'|'-nf'|'-sb'|'-sf'|'-w')
+		DFLAGS="$DFLAGS $1 $2" ; shift ;;
+	*)
+		break ;;
 	esac
-	FLAGS="${FLAGS} $1"
 	shift
 done
 
 # shellcheck disable=SC2086
-echo '' | dmenu -p "[duso] password for ${USER}:" ${FLAGS} | sudo -S "$@"
+echo '' | dmenu ${DFLAGS} -p "[duso] password for ${USER}:" | sudo -S "$@"
 
