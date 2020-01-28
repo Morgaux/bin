@@ -2,70 +2,29 @@
 #http://gitlab.com/morgaux/bin
 
 #
-# dmenu based man page searcher
+# dman(1) - use dmenu to search and open a man pages
 #
 
-SELF="$(basename "$0")"
+set -e
 
-err() {
-	echo "${SELF}: error: $*" 1>&2
-}
+dependencies dmenu st man
 
-for dependancy in dmenu st
-do
-	if [ -x "$(command -v "$dependancy")" ]
-	then
-		continue
-	fi
-
-	err "$dependancy is not installed."
-	exit 1
-done
-
-FLAGS=""
+SEARCH=""
+DFLAGS=""
 
 while [ "$#" -gt 0 ]
 do
 	case "$1" in
-		'-v'|'-b'|'-f'|'-i')
-			# dmenu flag
-			FLAGS="${FLAGS} $1"
-			;;
-		'-l'|'-m'|'-p'|'-fn'|'-nb'|'-nf'|'-sb'|'-sf'|'-w')
-			# dmenu flag with second option
-			FLAGS="${FLAGS} $1"
-			FLAGS="${FLAGS} $2"
-			;;
-		*)
-			# unrecognised option
-			break
-			;;
+	'-b'|'-f'|'-i'|'-v')
+		DFLAGS="$DFLAGS $1" ;;
+	'-l'|'-m'|'-p'|'-fn'|'-nb'|'-nf'|'-sb'|'-sf'|'-w')
+		DFLAGS="$DFLAGS $1 $2" ; shift ;;
+	*)
+		break ;;
 	esac
 	shift
 done
 
-if [ "$(echo "$@" | wc -w)" -gt 1 ]
-then
-	# shellcheck disable=SC2086
-	SEARCH="$(echo "$@" | tr ' ' '\s' | dmenu -p 'dman search:' ${FLAGS})"
-else
-	SEARCH="$*"
-fi
-
-if [ -z "$SEARCH" ]
-then
-	SEARCH="."
-fi
-
-RESULT="$(man -k "$SEARCH" | awk '{print $1}' | uniq)"
-
-if [ "$(echo "$RESULT" | wc -l)" -gt 1 ]
-then
-	# shellcheck disable=SC2086
-	QUERRY="$(echo "$RESULT" | dmenu -i -p 'dman page:' ${FLAGS})"
-else
-	QUERRY="$RESULT"
-fi
-
-st -e man "$QUERRY"
+# shellcheck disable=SC2086
+st -e man "$(man -k "${SEARCH:-"."}" | sed 's/(.*//g' | dmenu -p "man page:" ${DFLAGS})"
 
