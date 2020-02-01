@@ -12,7 +12,7 @@ NEO_FILE="$HOME/.neofetch"
 [ -x "$(command -v neofetch)" ] && exec neofetch $@
 [ -f "$NEO_FILE"              ] && exec "$NEO_FILE" $@
 
-if [ ! -x "$(command -v wget)" ] || [ ! -x "$(command -v curl)" ]
+if ! { [ -x "$(command -v wget)" ] || [ -x "$(command -v curl)" ] ; }
 then
 	echo "$(basename "$0"): error: at least one of curl or wget must be installed." 1>&2
 	exit 1
