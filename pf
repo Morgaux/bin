@@ -1,0 +1,41 @@
+#!/bin/sh
+# shellcheck disable=SC2005
+#http://gitlab.com/morgaux/bin
+
+#
+# Execute or install pfetch
+#
+
+PF_FILE="$HOME/.pfetch"
+
+# Exec
+[ -x "$(command -v pfetch)" ] && exec pfetch $@
+[ -f "$PF_FILE"             ] && exec "$PF_FILE" $@
+
+if ! { [ -x "$(command -v wget)" ] || [ -x "$(command -v curl)" ] ; }
+then
+	echo "$(basename "$0"): error: at least one of curl or wget must be installed." 1>&2
+	exit 1
+fi
+
+# Install
+SRCURL="https://raw.githubusercontent.com/dylanaraps/pfetch"
+
+get_latest_url() {
+	echo "${SRCURL}/master/pfetch"
+}
+
+download_from() {
+	if [ -x "$(command -v wget)" ]
+	then
+		wget -q -O - "$1"
+	else
+		curl -s "$1"
+	fi
+}
+
+download_from "$(get_latest_url)" > "$PF_FILE"
+chmod 755 "$PF_FILE"
+
+exec "$PF_FILE" $@
+
