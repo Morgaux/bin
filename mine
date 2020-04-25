@@ -2,8 +2,12 @@
 # http://gitlab.com/morgaux/bin
 
 #
-# launch mincraft
+# launch minecraft
 #
 
-java -jar "$HOME/.minecraft/launcher.jar"
+MINECRAFT_JAR="$HOME/.minecraft/launcher.jar"
+
+[ -x "$(command -v java)" ]     && \
+	[ -f "$MINECRAFT_JAR" ] && \
+	java -jar "$MINECRAFT_JAR"
 

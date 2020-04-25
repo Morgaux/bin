@@ -21,18 +21,18 @@ fi
 # Install
 SRCURL="https://raw.githubusercontent.com/dylanaraps/pfetch"
 
-get_latest_url() {
+get_latest_url() { # {{{
 	echo "${SRCURL}/master/pfetch"
-}
+} # }}}
 
-download_from() {
+download_from() { # {{{
 	if [ -x "$(command -v wget)" ]
 	then
 		wget -q -O - "$1"
 	else
 		curl -s "$1"
 	fi
-}
+} # }}}
 
 download_from "$(get_latest_url)" > "$PF_FILE"
 chmod 755 "$PF_FILE"

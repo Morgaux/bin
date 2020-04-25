@@ -5,5 +5,9 @@
 # Run a Python3 script
 #
 
-[ -x "$(command -v python3)" ] && exec python3 "$@"
+set -e
+
+dependencies python3
+
+exec python3 "$@"
 

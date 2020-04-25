@@ -20,12 +20,10 @@ fi
 echo "$$" > "$PIDFILE" || exit 1
 
 ##
-#
 # Begin daemonizable code
-#
 ##
 
-usage() {
+usage() { # {{{
 	echo "$SELF - sync your git repos"
 	echo ""
 	echo "usage:"
@@ -41,20 +39,20 @@ usage() {
 	echo "	NONE YET"
 	echo ""
 	exit 0
-}
+} # }}}
 
-[ "$#" -gt 0 ] || {
+[ "$#" -gt 0 ] || { # {{{
 	rm "$PIDFILE" || exit 1
 	exec "$0" .
-}
+} # }}}
 
 while [ "$#" -gt 0 ] ; do
 	cd "$CURENT_DIR" || exit 2
 
 	case "$1" in
-		"~"*)	REPO="$(echo "$1")";; # expand ~/
-		"/"*)	REPO="$1";;
-		*)	REPO="$1";;
+		"~"*) REPO="$(echo "$1")" ;; # expand ~/
+		"/"*) REPO="$1"           ;;
+		*)    REPO="$1"           ;;
 	esac
 	shift
 
@@ -69,9 +67,7 @@ while [ "$#" -gt 0 ] ; do
 done
 
 ##
-#
 # End daemonizable code
-#
 ##
 
 log "done, removing PID file"
