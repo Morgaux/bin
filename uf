@@ -8,18 +8,18 @@
 #
 
 if [ ! -x "$(command -v git)" ]
-then # {{{
+then
 	echo "$(basename "$0"): error: git is not installed." 1>&2
 	exit 1
-fi # }}}
+fi
 
 for i in /etc/*release*
 do
 	if [ -f "$i" ]
-	then # {{{
+	then
 		OS_DETAILS="$(cat /etc/*release*)"
 		break
-	fi # }}}
+	fi
 done
 
 [ -n "$OS_DETAILS" ] || OS_DETAILS="$(uname -a)" # fallback to just uname
@@ -29,13 +29,11 @@ then
 	git clone "https://gitlab.com/jschx/ufetch" ~/.ufetch >/dev/null 2>&1
 
 	if [ "$?" -ne 0 ]
-	then # {{{
+	then
 		echo "$(basename "$0"): error: git clone failed." 1>&2
 		exit 1
-	fi # }}}
+	fi
 fi
-
-
 
 UFETCH="$HOME/.ufetch/ufetch-$(\
 	for OS in $(\
