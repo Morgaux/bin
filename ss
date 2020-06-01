@@ -9,8 +9,6 @@
 
 set -e
 
-SELF="$(basename "$0")"
-
 # Color declarations for colourful output (if supported) {{{
 RESET="$(   [ -x "$(command -v tput)" ] && tput sgr0    2>/dev/null || true)"
 BLACK="$(   [ -x "$(command -v tput)" ] && tput setaf 0 2>/dev/null || true)"
@@ -25,11 +23,12 @@ BOLD="$(    [ -x "$(command -v tput)" ] && tput bold    2>/dev/null || true)"
 # Color declarations for colourful output (if supported) }}}
 
 err() { # {{{
-	echo "${BOLD}${SELF}${RESET}: ${YELLOW}error, $@${RESET}" 1>&2
+	echo "${YELLOW}ERROR${RESET}: ${BOLD}$@${RESET}" 1>&2
+	return 1
 } # }}}
 
 die() { # {{{
-	echo "${BOLD}${SELF}${RESET}: ${RED}fatal error, $@${RESET}" 1>&2
+	echo "${RED}FATAL ERROR${RESET}: ${BOLD}$@${RESET}" 1>&2
 	exit 1
 } # }}}
 
