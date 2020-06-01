@@ -1,9 +1,0 @@
-#!/bin/sh
-#http://gitlab.com/morgaux/bin
-
-#
-# is X/Xorg/X11 running?
-#
-
-xset q >/dev/null 2>&1
-

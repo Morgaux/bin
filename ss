@@ -7,26 +7,44 @@
 # save a Screen Shot
 #
 
-for dependancy in scrot xdg-user-dir
+set -e
+
+err() { # {{{
+	echo "$(basename "$0"): error, $@" 1>&2
+} # }}}
+
+die() { # {{{
+	err "$@"
+	exit 1
+} # }}}
+
+for dependancy in scrot xdg-user-dir # {{{
 do
-	if [ -x "$(command -v "$dependancy")" ]
+	if [ ! -x "$(command -v "$dependancy")" ]
 	then
-		continue
+		die "${dependancy} is not installed."
 	fi
+done # }}}
 
-	echo "$(basename "$0"): error: $dependancy is not installed." 1>&2
-	exit 1
-done
-
-if ! hasX
+if ! xset q >/dev/null 2>&1 # {{{
 then
-	echo "$(basename "$0"): requires X11" 1>&2
-	exit 1
-fi
+	die "xorg is not running." 1>&2
+fi # }}}
 
-SAVE_DIR="$(xdg-user-dir PICTURES)/Screenshots/"
+# Setup {{{
+XDG="$(xdg-user-dir PICTURES)"
+DIR="${XDG:-"$HOME/var/Pictures"}/Screenshots/"
+CMD="$(echo "mv \$f $DIR")"
+FMT="%s.png"
+# Setup }}}
 
-[ -d "$SAVE_DIR" ] || mkdir -p "$SAVE_DIR"
+if [ ! -d "$DIR" ] # {{{
+then
+	mkdir -p "$DIR" || die "couldn't create the '$DIR' directory"
+fi # }}}
 
-scrot '%s.png' -e "$(echo "mv \$f $SAVE_DIR")" $@ || exit 2
+if ! scrot "$FMT" -e "$CMD" $@ # {{{
+then
+	die "scrot failed with error code '$?'"
+fi # }}}
 

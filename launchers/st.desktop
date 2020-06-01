@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=Suckless Terminal
-Type=Application
-Comment=Suckless Terminal
-Exec=st
-Terminal=false
-Icon=utilities-terminal
-X-Desktop-File-Install-Version=0.23
-GenericName[en_US.UTF-8]=Suckless Terminal
