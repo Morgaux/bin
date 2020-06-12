@@ -1,0 +1,44 @@
+#!/bin/sh
+
+VERSION_FILE="/etc/alpine-release"
+
+err() { # {{{
+	echo "$@" 1>&2
+} # }}}
+
+die() { # {{{
+	err "$(basename "$0"): $@"
+	exit 1
+} # }}}
+
+if [ -f "$VERSION_FILE" ] && [ -z "$VERSION_FILE" ]
+then
+	die "must be run on Alpine Linux"
+fi
+
+if [ ! -x "$(command -v apk)" ]
+then
+	die "apk(1) is not accessible... Somehow..."
+fi
+
+if [ ! "$(id -u)" = "0" ]
+then
+	die "must be run as root"
+fi
+
+err "Searching currently installed packages..."
+INSTALLED_PKGS="$(apk info)"
+INSTALLED_NON_DOCS="$(echo "$INSTALLED_PKGS" | grep -v -- -doc)"
+
+err "Searching for docs of installed packages..."
+RELATED_PKGS="$(for PKG in $INSTALLED_NON_DOCS ; do apk search "$PKG" ; done)"
+RELEATED_DOCS="$(echo "$RELATED_PKGS" | grep -- -doc)"
+DOC_PKGS_TO_INSTALL="$(echo "$RELEATED_DOCS" | 'sed s/\(-doc[^-]*\)-.*/\1/g')"
+PKGS_TO_INSTALL_COUNT="$(echo "$DOC_PKGS_TO_INSTALL" | wc -l)"
+
+read -p "Install ${PKGS_TO_INSTALL_COUNT} doc packages [y/N]? " ACTION
+case "$ACTION" in
+	[Yy]*) apk add $DOC_PKGS_TO_INSTALL  ;;
+	*) echo "Nothing installed" ; exit 0 ;;
+esac
+
