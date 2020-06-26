@@ -7,7 +7,7 @@ err() { # {{{
 } # }}}
 
 die() { # {{{
-	err "$(basename "$0"): $@"
+	err "$(basename "$0"): $*"
 	exit 1
 } # }}}
 
@@ -43,9 +43,9 @@ else
 	PROMPT="Install ${PKGS_TO_INSTALL_COUNT} doc packages [y/N]? "
 fi
 
-read -p "$PROMPT" ACTION
+read -rp "$PROMPT" ACTION
 case "$ACTION" in
-	[Yy]*) apk add $DOC_PKGS_TO_INSTALL  ;;
-	*) echo "Nothing installed" ; exit 0 ;;
+	[Yy]*) apk add "$DOC_PKGS_TO_INSTALL" ;;
+	*) echo "Nothing installed" ; exit 0  ;;
 esac
 

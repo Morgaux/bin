@@ -26,9 +26,9 @@ done
 
 if [ ! -d "$HOME/.ufetch" ]
 then
-	git clone "https://gitlab.com/jschx/ufetch" ~/.ufetch >/dev/null 2>&1
-
-	if [ "$?" -ne 0 ]
+	if ! git clone "https://gitlab.com/jschx/ufetch" ~/.ufetch \
+		>/dev/null \
+		2>&1
 	then
 		echo "$(basename "$0"): error: git clone failed." 1>&2
 		exit 1

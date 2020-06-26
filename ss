@@ -1,5 +1,8 @@
 #!/bin/sh
 # shellcheck disable=SC2116
+# shellcheck disable=SC2068
+# shellcheck disable=SC2034
+# shellcheck disable=SC2015
 
 #http://gitlab.com/morgaux/bin
 
@@ -23,12 +26,12 @@ BOLD="$(    [ -x "$(command -v tput)" ] && tput bold    2>/dev/null || true)"
 # Color declarations for colourful output (if supported) }}}
 
 err() { # {{{
-	echo "${YELLOW}ERROR${RESET}: ${BOLD}$@${RESET}" 1>&2
+	echo "${YELLOW}ERROR${RESET}: ${BOLD}$*${RESET}" 1>&2
 	return 1
 } # }}}
 
 die() { # {{{
-	echo "${RED}FATAL ERROR${RESET}: ${BOLD}$@${RESET}" 1>&2
+	echo "${RED}FATAL ERROR${RESET}: ${BOLD}$*${RESET}" 1>&2
 	exit 1
 } # }}}
 

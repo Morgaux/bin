@@ -1,5 +1,6 @@
 #!/bin/sh
 # shellcheck disable=SC2005
+# shellcheck disable=SC2068
 #http://gitlab.com/morgaux/bin
 
 #
