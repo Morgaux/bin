@@ -1,0 +1,13 @@
+#!/bin/sh
+
+#
+# w3m wrapper
+#
+
+if [ -x "$(command -v w3m)" ]
+then
+	exec w3m "duckduckgo.com?q=$(echo "$*" | sed 's/\s+/%20/g')"
+else
+	echo "" 1>&2
+fi
+
