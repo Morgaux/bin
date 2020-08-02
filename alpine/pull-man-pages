@@ -43,9 +43,9 @@ else
 	PROMPT="Install ${PKGS_TO_INSTALL_COUNT} doc packages [y/N]? "
 fi
 
-printf "%s" "$PROMPT
+printf "%s" "$PROMPT"
 
-read -r" ACTION
+read -r ACTION
 case "$ACTION" in
 	[Yy]*) apk add "$DOC_PKGS_TO_INSTALL" ;;
 	*) echo "Nothing installed" ; exit 0  ;;
